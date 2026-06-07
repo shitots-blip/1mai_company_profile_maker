@@ -75,11 +75,15 @@ const FAQ_ITEMS = [
   },
   {
     q: 'プリンターがない場合はどうすればいいですか？',
-    a: 'コンビニ（セブン・ファミマなど）でそのまま印刷できます。コンビニ印刷サポートオプション（+500円）もご用意しています。',
+    a: 'ダウンロードした印刷用データを使って、コンビニ印刷（セブン・ファミマなど）やネット印刷サービスをご利用いただけます。コンビニ印刷サポートオプション（+500円）もご用意しています。',
   },
   {
     q: '会員登録は必要ですか？',
     a: '不要です。決済完了後、入力用リンクをメールでお届けします。アカウント作成なしでご利用いただけます。',
+  },
+  {
+    q: '印刷された紙が届くサービスですか？',
+    a: 'いいえ。本サービスは会社紹介データを作成するサービスです。完成後に、印刷用データと画像データをダウンロードできます。印刷はご自身のプリンター、コンビニ印刷、ネット印刷サービスなどをご利用ください。',
   },
 ]
 
@@ -170,7 +174,8 @@ function LandingContent() {
               営業先に渡せる<br />会社紹介を<br />作りませんか。
             </h1>
             <p className="text-gray-500 text-base leading-relaxed mb-8">
-              質問に答えるだけで、営業先にそのまま渡せる会社紹介を作成できます。印刷して、すぐ使えます。
+              質問に答えるだけで、営業先に渡せる会社紹介データを作成できます。<br className="hidden md:block" />
+              完成後、印刷用データと画像データをダウンロードできます。
             </p>
 
             {checkoutError && (
@@ -195,7 +200,7 @@ function LandingContent() {
                 priority
               />
             </div>
-            <p className="text-xs text-gray-400 text-center mt-2">実際に印刷した会社紹介（3社）</p>
+            <p className="text-xs text-gray-400 text-center mt-2">ダウンロードしたデータを印刷した活用例（3社）</p>
           </div>
         </div>
       </section>
@@ -208,7 +213,7 @@ function LandingContent() {
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">こんな会社紹介が作れます</h2>
           <p className="text-gray-400 text-sm text-center mb-10">
-            実際に印刷した会社紹介です。そのまま営業先にお持ちください。
+            ダウンロードしたデータを印刷すると、このように営業資料として活用できます。
           </p>
 
           {/* 3社並び大版 */}
@@ -271,15 +276,15 @@ function LandingContent() {
               />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-[#1e3a5f] mb-5">営業先に<br />そのまま渡せます</h2>
+              <h2 className="text-2xl font-bold text-[#1e3a5f] mb-5">完成したデータは、<br />すぐにダウンロードできます</h2>
               <p className="text-gray-600 text-base leading-relaxed mb-6">
-                完成した会社紹介は、訪問営業、商談、紹介先への説明などにそのまま使えます。会社の概要、対応サービス、強み、連絡先をA4一枚に整理できます。
+                完成後は、印刷用データと画像データをダウンロードできます。メール添付、LINE共有、ご自身での印刷など、さまざまな場面に活用できます。
               </p>
               <ul className="space-y-3">
                 {[
-                  '管理会社・元請けへの初回営業',
-                  '名刺と一緒に渡す会社案内として',
-                  '工事後のフォロー訪問時に',
+                  '印刷用データ（A4・そのまま印刷できる形式）',
+                  '画像データ（メール添付・LINE共有用）',
+                  '管理会社・元請けへの営業資料として',
                   '紹介先への説明資料として',
                 ].map((text) => (
                   <li key={text} className="flex items-center gap-3 text-gray-700 text-sm">
@@ -301,9 +306,9 @@ function LandingContent() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-14 items-center">
             <div className="order-2 md:order-1">
-              <h2 className="text-2xl font-bold text-[#1e3a5f] mb-5">印刷して、<br />すぐ営業で使える</h2>
+              <h2 className="text-2xl font-bold text-[#1e3a5f] mb-5">印刷用データとして<br />使いやすい形に整えます</h2>
               <p className="text-gray-600 text-base leading-relaxed mb-6">
-                完成データは印刷用としてダウンロードできます。自宅のプリンターやコンビニ印刷で出力し、そのまま営業先へ持参できます。
+                本サービスで提供するのは印刷物ではなく、会社紹介データです。ダウンロードしたデータをご自身のプリンター、コンビニ印刷、ネット印刷サービスなどで印刷すれば、そのまま営業資料として活用できます。
               </p>
               <ul className="space-y-3">
                 {[

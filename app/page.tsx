@@ -33,11 +33,105 @@ function SecurityNote() {
 function TrustBadges() {
   return (
     <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-gray-500">
-      {['会員登録不要', '写真なしでも作成できます', '印刷用データで受け取れます'].map((t) => (
+      {['会員登録不要', '写真なしでも作成できます', '完成後にデータをダウンロード'].map((t) => (
         <span key={t} className="flex items-center gap-1.5">
           <span className="text-green-500 font-bold">✓</span>{t}
         </span>
       ))}
+    </div>
+  )
+}
+
+// ─── スマホ入力モック（Hero用） ──────────────────────────────
+
+function HeroPhoneMockup() {
+  const [selectedItems, setSelectedItems] = useState(['マンション・アパート', '店舗・商業施設', '工場・倉庫'])
+
+  const toggle = (item: string) => {
+    setSelectedItems(prev =>
+      prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]
+    )
+  }
+
+  const options = [
+    '一戸建て・住宅', 'マンション・アパート',
+    '店舗・商業施設', '工場・倉庫',
+    '病院・福祉施設', '学校・公共施設',
+    '新築物件', '古い建物',
+  ]
+
+  return (
+    <div style={{
+      width: 170,
+      background: '#1c1c1e',
+      borderRadius: 36,
+      boxShadow: '0 0 0 1px #3a3a3c, 0 10px 30px rgba(0,0,0,0.20)',
+      position: 'relative',
+      overflow: 'hidden',
+      flexShrink: 0,
+      aspectRatio: '375 / 812',
+      fontFamily: "'Hiragino Sans', 'Noto Sans JP', sans-serif",
+    }}>
+      {/* サイドボタン */}
+      <div style={{ position: 'absolute', left: -2, top: '17%', width: 2, height: '4%', background: '#3a3a3c', borderRadius: '2px 0 0 2px' }} />
+      <div style={{ position: 'absolute', left: -2, top: '23%', width: 2, height: '8%', background: '#3a3a3c', borderRadius: '2px 0 0 2px' }} />
+      <div style={{ position: 'absolute', left: -2, top: '33%', width: 2, height: '8%', background: '#3a3a3c', borderRadius: '2px 0 0 2px' }} />
+      <div style={{ position: 'absolute', right: -2, top: '25%', width: 2, height: '11%', background: '#3a3a3c', borderRadius: '0 2px 2px 0' }} />
+
+      {/* スクリーン */}
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 36, overflow: 'hidden', background: '#f2f2f7' }}>
+        {/* Dynamic Island */}
+        <div style={{
+          position: 'absolute', top: '1.5%', left: '50%', transform: 'translateX(-50%)',
+          width: '32%', height: '4%', background: '#1c1c1e', borderRadius: 20, zIndex: 10,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 10%',
+        }}>
+          <span style={{ color: 'white', fontSize: 8, fontWeight: 600 }}>7:52</span>
+          <div style={{ width: 6, height: 6, background: '#1c1c1e', borderRadius: '50%', border: '1px solid #2c2c2e' }} />
+        </div>
+
+        {/* アプリ画面 */}
+        <div style={{ marginTop: '14%', height: '86%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ padding: '4% 6% 0' }}>
+            <div style={{ fontSize: 8, fontWeight: 700, color: '#1e3a5f', marginBottom: '3%' }}>1枚会社紹介メーカー</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5%' }}>
+              <span style={{ fontSize: 7, color: '#8e8e93' }}>STEP 3 / 9</span>
+            </div>
+            <div style={{ height: 2, background: '#e5e5ea', borderRadius: 1, overflow: 'hidden' }}>
+              <div style={{ width: '33%', height: '100%', background: '#1e3a5f', borderRadius: 1 }} />
+            </div>
+          </div>
+
+          <div style={{ flex: 1, overflowY: 'hidden', padding: '4% 6% 0' }}>
+            <h2 style={{ fontSize: 10, fontWeight: 800, color: '#1c1c1e', lineHeight: 1.4, marginBottom: '2%' }}>
+              対応する建物を<br />教えてください
+            </h2>
+            <p style={{ fontSize: 7, color: '#8e8e93', marginBottom: '5%' }}>あてはまるものをすべて選んでください。</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+              {options.map(item => {
+                const selected = selectedItems.includes(item)
+                return (
+                  <button key={item} onClick={() => toggle(item)} style={{
+                    padding: '3px 7px', borderRadius: 50,
+                    border: selected ? 'none' : '1px solid #d1d1d6',
+                    background: selected ? '#1e3a5f' : 'white',
+                    color: selected ? 'white' : '#1c1c1e',
+                    fontSize: 7, fontWeight: selected ? 600 : 400,
+                    cursor: 'pointer', transition: 'all 0.15s',
+                  }}>
+                    {item}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div style={{ padding: '3% 6% 6%', background: 'white', borderTop: '1px solid #f2f2f7', display: 'flex', gap: 5 }}>
+            <button style={{ flex: '0 0 30%', padding: '5% 0', borderRadius: 8, border: '1px solid #e5e5ea', background: 'white', color: '#3c3c43', fontSize: 8, cursor: 'pointer' }}>← 戻る</button>
+            <button style={{ flex: 1, padding: '5% 0', borderRadius: 8, border: 'none', background: '#1e3a5f', color: 'white', fontSize: 8, fontWeight: 700, cursor: 'pointer' }}>次へ</button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -58,7 +152,7 @@ function PrimaryButton({
   )
 }
 
-// ─── FAQ データ（5問に絞る） ───────────────────────────────────
+// ─── FAQ ───────────────────────────────────────────────────────
 
 const FAQ_ITEMS = [
   {
@@ -87,30 +181,13 @@ const FAQ_ITEMS = [
   },
 ]
 
-// ─── 3社サンプルカード ─────────────────────────────────────────
+// ─── 会社紹介サンプル（4枚）─────────────────────────────────
 
-const SAMPLES = [
-  {
-    href: '/samples/chiba-chuo',
-    name: '千葉中央設備株式会社',
-    category: '設備工事',
-    target: 'マンション・ビル管理会社向け',
-    img: '/samples/chiba-chuo-work1.png',
-  },
-  {
-    href: '/samples/toyo-bousui',
-    name: '東葉防水工業',
-    category: '防水工事',
-    target: '工務店・不動産会社向け',
-    img: '/samples/toyo-bousui-work1.png',
-  },
-  {
-    href: '/samples/yachimata-reform',
-    name: '八街リフォームサービス',
-    category: '水回りリフォーム',
-    target: '個人のお客様向け',
-    img: '/samples/yachimata-reform-work1.png',
-  },
+const PROFILE_SAMPLES = [
+  { label: 'サンプルA', category: '設備工事', img: '/lp-sample-chiba.png', imgH: 1273 },
+  { label: 'サンプルB', category: '防水工事', img: '/lp-sample-toyo.png', imgH: 1273 },
+  { label: 'サンプルC', category: 'リフォーム', img: '/lp-sample-yachimata.png', imgH: 1273 },
+  { label: 'サンプルD', category: '写真なし', img: '/lp-sample-nophoto.png', imgH: 1273 },
 ]
 
 // ─── メイン ────────────────────────────────────────────────────
@@ -121,6 +198,7 @@ function LandingContent() {
   const canceled = searchParams.get('canceled')
 
   const [loading, setLoading] = useState(false)
+  const [lightbox, setLightbox] = useState<{ img: string; label: string; category: string } | null>(null)
   const [checkoutError, setCheckoutError] = useState<string | null>(
     error === 'link' ? '作成リンクを確認できませんでした。メールに記載されたリンクをご確認ください。' :
     canceled ? '決済がキャンセルされました。' : null
@@ -157,25 +235,29 @@ function LandingContent() {
         </div>
       </nav>
 
-      {/* ─────────────────────────────────────────────
+      {/* ──────────────────────────────────────────────
           S1. ファーストビュー
-          右：3社の完成物写真（何が作れるか一目瞭然）
-      ──────────────────────────────────────────────── */}
+          左：コピー＋CTA　右：完成物写真＋スマホ入力画面
+      ─────────────────────────────────────────────── */}
       <section className="max-w-5xl mx-auto px-6 pt-16 pb-20">
         <div className="grid md:grid-cols-5 gap-10 items-center">
 
           {/* テキスト（2/5） */}
           <div className="md:col-span-2">
-            <p className="text-[#2468a8] text-sm font-bold tracking-wide mb-5">
+            <p className="text-[#2468a8] text-sm font-bold tracking-wide mb-4">
               工事会社・設備会社・地域密着企業向け
             </p>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#1e3a5f] leading-[1.3] mb-6">
-              名刺だけでは<br />伝わらない。<br />
-              営業先に渡せる<br />会社紹介を<br />作りませんか。
+            <h1 className="text-3xl md:text-4xl font-bold text-[#1e3a5f] leading-[1.3] mb-5">
+              A4一枚で、<br />
+              信頼が伝わる<br />
+              会社紹介をつくる
             </h1>
-            <p className="text-gray-500 text-base leading-relaxed mb-8">
-              質問に答えるだけで、営業先に渡せる会社紹介データを作成できます。<br className="hidden md:block" />
-              完成後、印刷用データと画像データをダウンロードできます。
+            <p className="text-gray-600 text-base leading-relaxed mb-2">
+              営業先・管理会社・お客様に渡せる<br />
+              会社紹介データをかんたん作成。
+            </p>
+            <p className="text-gray-400 text-sm leading-relaxed mb-8">
+              完成後は印刷用データと画像データをダウンロードできます。
             </p>
 
             {checkoutError && (
@@ -188,27 +270,95 @@ function LandingContent() {
             <TrustBadges />
           </div>
 
-          {/* 完成物写真（3社並び・3/5） */}
-          <div className="md:col-span-3">
-            <div className="rounded-xl overflow-hidden border border-gray-100">
+          {/* 右：会社紹介サンプル（メイン）＋スマホ入力モック（右）（3/5） */}
+          <div className="md:col-span-3 flex items-start gap-3">
+            {/* 会社紹介サンプル */}
+            <div className="flex-1 rounded-xl overflow-hidden border border-gray-200 shadow-sm">
               <Image
-                src="/lp-3samples.jpg"
-                alt="千葉中央設備・東葉防水工業・八街リフォームサービスの会社紹介3枚並び"
-                width={1400}
-                height={900}
+                src="/lp-sample-chiba.png"
+                alt="千葉中央設備株式会社の会社紹介サンプル"
+                width={900}
+                height={1273}
                 className="w-full h-auto"
                 priority
               />
             </div>
-            <p className="text-xs text-gray-400 text-center mt-2">ダウンロードしたデータを印刷した活用例（3社）</p>
+            {/* スマホ入力モック（右）*/}
+            <div className="hidden md:flex items-center pt-8">
+              <HeroPhoneMockup />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────
-          S2. こんな会社紹介が作れます
-          実物写真を大きく、下に3社カード
-      ──────────────────────────────────────────────── */}
+      {/* ──────────────────────────────────────────────
+          S2. よくある悩み
+      ─────────────────────────────────────────────── */}
+      <section className="bg-[#f5f7fa] border-t border-gray-100 py-20">
+        <div className="max-w-4xl mx-auto px-6">
+          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">
+            会社紹介が整っていないと、<br />
+            営業のチャンスを逃してしまいます
+          </h2>
+          <p className="text-gray-400 text-sm text-center mb-12">
+            多くの中小企業・工事会社で、こんなお悩みがよくあります
+          </p>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { icon: '📋', title: '営業先に渡せる資料がない', desc: '口頭説明や名刺だけでは、信頼感を十分に伝えられません。' },
+              { icon: '🌐', title: 'ホームページが長くて伝わらない', desc: '必要な情報がまとまっていないため、見てもらえないことがあります。' },
+              { icon: '📁', title: '昔の資料のまま更新できていない', desc: '情報が古いまま、かえって不安感を与えてしまいます。' },
+              { icon: '🔁', title: '毎回同じ説明をしている', desc: '営業のたびに口頭で会社説明をする手間が続いています。' },
+              { icon: '💻', title: 'デザインやPDF編集が分からない', desc: '作り方が分からず、資料作成が後回しになっています。' },
+            ].map(({ icon, title, desc }) => (
+              <div key={title} className="bg-white rounded-xl border border-gray-200 p-5">
+                <div className="text-2xl mb-3">{icon}</div>
+                <p className="font-bold text-[#1e3a5f] text-sm mb-1.5">{title}</p>
+                <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ──────────────────────────────────────────────
+          S3. 解決
+      ─────────────────────────────────────────────── */}
+      <section className="bg-white border-t border-gray-100 py-20">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">
+            その悩み、<br className="sm:hidden" />A4一枚の会社紹介で解決できます
+          </h2>
+          <p className="text-gray-400 text-sm text-center mb-12">
+            1枚に情報を整えることで、信頼感が伝わり、営業や提案がスムーズになります。
+          </p>
+
+          <div className="bg-[#f5f7fa] rounded-2xl p-8 md:p-10">
+            <h3 className="text-xl font-bold text-[#1e3a5f] mb-8">A4一枚で整えると</h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              {[
+                { point: '必要な情報が一目で伝わる', sub: '会社概要・対応工事・強み・連絡先をひとつにまとめます' },
+                { point: '営業先にそのまま渡せる', sub: '印刷してそのまま手渡しできる形式で作成します' },
+                { point: 'メールやLINEでも送れる', sub: '画像データとして添付・共有できます' },
+                { point: '管理会社への提出にも使える', sub: '信頼感のある資料として活用できます' },
+              ].map(({ point, sub }) => (
+                <div key={point} className="flex items-start gap-3">
+                  <span className="text-green-500 font-bold text-lg flex-shrink-0 mt-0.5">✓</span>
+                  <div>
+                    <p className="text-base font-bold text-[#1e3a5f]">{point}</p>
+                    <p className="text-sm text-gray-500 mt-1">{sub}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ──────────────────────────────────────────────
+          S4. 完成サンプル（4枚サムネイル）
+      ─────────────────────────────────────────────── */}
       <section className="bg-[#f5f7fa] border-t border-gray-100 py-20">
         <div className="max-w-5xl mx-auto px-6">
           <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">こんな会社紹介が作れます</h2>
@@ -216,195 +366,299 @@ function LandingContent() {
             ダウンロードしたデータを印刷すると、このように営業資料として活用できます。
           </p>
 
-          {/* 3社並び大版 */}
-          <div className="rounded-xl overflow-hidden mb-10">
-            <Image
-              src="/lp-3samples.jpg"
-              alt="3社の会社紹介が机の上に並んでいる実物写真"
-              width={1400}
-              height={900}
-              className="w-full h-auto"
-            />
-          </div>
-
-          {/* 3社カード */}
-          <div className="grid sm:grid-cols-3 gap-5">
-            {SAMPLES.map(({ href, name, category, target, img }) => (
-              <Link
-                key={href}
-                href={href}
-                target="_blank"
-                className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-[#1e3a5f] transition block"
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {PROFILE_SAMPLES.map(({ label, category, img, imgH }) => (
+              <button
+                key={label}
+                onClick={() => setLightbox({ img, label, category })}
+                className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-[#1e3a5f] hover:shadow-md transition text-left group"
               >
-                <div className="aspect-[4/3] overflow-hidden bg-[#f0f4f8]">
+                <div className="overflow-hidden relative">
                   <Image
                     src={img}
-                    alt={name}
-                    width={600}
-                    height={450}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    alt={`${label} ${category}の会社紹介サンプル`}
+                    width={900}
+                    height={imgH}
+                    className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
                   />
+                  <div className="absolute inset-0 bg-[#1e3a5f]/0 group-hover:bg-[#1e3a5f]/10 transition flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 transition bg-white/90 text-[#1e3a5f] text-xs font-bold px-3 py-1.5 rounded-full shadow">
+                      拡大して見る
+                    </span>
+                  </div>
                 </div>
-                <div className="px-4 py-4">
-                  <span className="inline-block text-xs font-bold text-[#2468a8] bg-[#e8f0f8] px-2 py-0.5 rounded mb-2">{category}</span>
-                  <p className="font-bold text-sm text-[#1e3a5f] group-hover:underline leading-tight mb-1">{name}</p>
-                  <p className="text-xs text-gray-400">{target}</p>
+                <div className="px-3 py-3">
+                  <span className="inline-block text-xs font-bold text-[#2468a8] bg-[#e8f0f8] px-2 py-0.5 rounded mb-1">{category}</span>
+                  <p className="text-xs font-bold text-[#1e3a5f]">{label}</p>
                 </div>
-              </Link>
+              </button>
             ))}
           </div>
-          <p className="text-center text-sm text-[#2468a8] mt-6">
-            ↑ クリックすると実際のサンプルを確認できます
-          </p>
+
+          {/* ライトボックス */}
+          {lightbox && (
+            <div
+              className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
+              onClick={() => setLightbox(null)}
+            >
+              <div
+                className="relative bg-white rounded-2xl overflow-hidden max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-shrink-0">
+                  <div>
+                    <span className="text-xs font-bold text-[#2468a8] bg-[#e8f0f8] px-2 py-0.5 rounded mr-2">{lightbox.category}</span>
+                    <span className="text-sm font-bold text-[#1e3a5f]">{lightbox.label}</span>
+                  </div>
+                  <button
+                    onClick={() => setLightbox(null)}
+                    className="text-gray-400 hover:text-gray-600 text-xl leading-none px-2 py-1 rounded hover:bg-gray-100 transition"
+                    aria-label="閉じる"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="overflow-y-auto">
+                  <Image
+                    src={lightbox.img}
+                    alt={`${lightbox.label} ${lightbox.category}の会社紹介サンプル`}
+                    width={900}
+                    height={1273}
+                    className="w-full h-auto"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────
-          S3. 営業先にそのまま渡せます
-          手渡し写真で利用シーンを伝える
-      ──────────────────────────────────────────────── */}
+      {/* ──────────────────────────────────────────────
+          S5. 活用シーン
+      ─────────────────────────────────────────────── */}
       <section className="bg-white border-t border-gray-100 py-20">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-14 items-center">
+          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">さまざまな場面で活躍します</h2>
+          <p className="text-gray-400 text-sm text-center mb-12">
+            一度作れば、繰り返し使える営業資料になります。
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="rounded-xl overflow-hidden">
               <Image
                 src="/lp-handover.jpg"
-                alt="営業先に会社紹介を手渡しているシーン"
+                alt="印刷した会社紹介を営業先に渡しているシーン"
                 width={800}
                 height={1000}
                 className="w-full h-auto"
               />
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-[#1e3a5f] mb-5">完成したデータは、<br />すぐにダウンロードできます</h2>
-              <p className="text-gray-600 text-base leading-relaxed mb-6">
-                完成後は、印刷用データと画像データをダウンロードできます。メール添付、LINE共有、ご自身での印刷など、さまざまな場面に活用できます。
-              </p>
-              <ul className="space-y-3">
-                {[
-                  '印刷用データ（A4・そのまま印刷できる形式）',
-                  '画像データ（メール添付・LINE共有用）',
-                  '管理会社・元請けへの営業資料として',
-                  '紹介先への説明資料として',
-                ].map((text) => (
-                  <li key={text} className="flex items-center gap-3 text-gray-700 text-sm">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#2468a8] flex-shrink-0" />
-                    {text}
-                  </li>
-                ))}
-              </ul>
+
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { icon: '🤝', scene: '営業訪問', desc: '初回訪問時にそのまま手渡し' },
+                { icon: '📊', scene: '提案・見積もり時', desc: '会社の信頼感を添えて提出' },
+                { icon: '🏢', scene: '管理会社への提出', desc: '元請けへの説明資料として' },
+                { icon: '📬', scene: '見積書に同封', desc: '会社案内を一緒に送付' },
+                { icon: '📧', scene: 'メール添付', desc: '画像データとして送れます' },
+                { icon: '📱', scene: 'LINEで送付', desc: 'スマホですぐ共有できます' },
+              ].map(({ icon, scene, desc }) => (
+                <div key={scene} className="bg-[#f5f7fa] rounded-xl p-4">
+                  <div className="text-xl mb-2">{icon}</div>
+                  <p className="font-bold text-sm text-[#1e3a5f] mb-1">{scene}</p>
+                  <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────
-          S4. 印刷して、すぐ営業で使える
-          机の上の印刷物写真で実用感を伝える
-      ──────────────────────────────────────────────── */}
-      <section className="bg-[#f5f7fa] border-t border-gray-100 py-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-14 items-center">
-            <div className="order-2 md:order-1">
-              <h2 className="text-2xl font-bold text-[#1e3a5f] mb-5">印刷用データとして<br />使いやすい形に整えます</h2>
-              <p className="text-gray-600 text-base leading-relaxed mb-6">
-                本サービスで提供するのは印刷物ではなく、会社紹介データです。ダウンロードしたデータをご自身のプリンター、コンビニ印刷、ネット印刷サービスなどで印刷すれば、そのまま営業資料として活用できます。
-              </p>
-              <ul className="space-y-3">
-                {[
-                  'A4サイズ・そのまま印刷できる形式',
-                  'セブン・ファミマなどコンビニでも印刷可',
-                  '画像データ（SNS・メール添付用）もダウンロード可',
-                  'コンビニ印刷サポートオプションもあります（+500円）',
-                ].map((text) => (
-                  <li key={text} className="flex items-start gap-3 text-gray-700 text-sm">
-                    <span className="text-[#2468a8] font-bold flex-shrink-0 mt-0.5">✓</span>
-                    {text}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="order-1 md:order-2 rounded-xl overflow-hidden">
-              <Image
-                src="/lp-desk.jpg"
-                alt="机の上に置かれた印刷済みの会社紹介"
-                width={800}
-                height={960}
-                className="w-full h-auto"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────
-          S5. どんな場面で使えますか
-          近接写真＋用途一覧
-      ──────────────────────────────────────────────── */}
-      <section className="bg-white border-t border-gray-100 py-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-14 items-center">
-            <div className="rounded-xl overflow-hidden">
-              <Image
-                src="/lp-closeup.jpg"
-                alt="会社紹介の詳細部分の近接写真"
-                width={800}
-                height={960}
-                className="w-full h-auto"
-              />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-[#1e3a5f] mb-8">こんな場面で<br />使われています</h2>
-              <div className="space-y-4">
-                {[
-                  { scene: '管理会社・元請けへの営業', desc: '初回訪問時にそのまま渡せます' },
-                  { scene: '商談・見積もり提出時', desc: '会社の信頼感を伝えられます' },
-                  { scene: '紹介時の説明資料', desc: '口頭説明に加えて手元に残せます' },
-                  { scene: 'ホームページ誘導', desc: 'QRコードを掲載してWeb誘導も可能' },
-                  { scene: '採用時の会社紹介', desc: '求職者に会社の雰囲気を伝えられます' },
-                ].map(({ scene, desc }) => (
-                  <div key={scene} className="flex items-start gap-3">
-                    <span className="text-[#2468a8] font-bold flex-shrink-0 mt-0.5">✓</span>
-                    <div>
-                      <p className="text-sm font-bold text-[#1e3a5f]">{scene}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────
-          S6. 3ステップで完成
-      ──────────────────────────────────────────────── */}
+      {/* ──────────────────────────────────────────────
+          S6. 作成の流れ
+      ─────────────────────────────────────────────── */}
       <section className="bg-[#f5f7fa] border-t border-gray-100 py-20">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-2">3ステップで完成</h2>
-          <p className="text-gray-400 text-sm text-center mb-14">入力時間の目安：約5分</p>
+          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-2">5分ほどの入力で完成します</h2>
+          <p className="text-gray-400 text-sm text-center mb-14">
+            質問に答えるだけで、印刷用データが完成します。写真がなくても作成できます。
+          </p>
+
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { step: '01', title: '質問に答える', desc: '業種・対応エリア・強みなど、画面の案内に沿って入力します。難しい操作はありません。' },
-              { step: '02', title: '写真を選ぶ', desc: '作業写真・代表者写真・会社ロゴを追加できます。写真がなくても完成します。' },
-              { step: '03', title: '印刷用データを受け取る', desc: 'A4サイズのまま印刷できる形式でダウンロードできます。画像データも同時に取得できます。' },
+              {
+                step: 'STEP 1',
+                title: '質問に答える',
+                desc: '業種・対応エリア・強みなど、画面の案内に沿って選択・入力します。難しい操作はありません。',
+                img: '/lp-phone-step1.png',
+                imgAlt: '入力フォームのスマホ画面',
+                imgW: 600,
+                imgH: 1300,
+                narrow: true,
+              },
+              {
+                step: 'STEP 2',
+                title: '写真を追加する（任意）',
+                desc: '作業写真・代表者写真・会社ロゴを追加できます。写真がなくても完成します。',
+                img: '/lp-phone-step8.png',
+                imgAlt: '写真追加のスマホ画面',
+                imgW: 600,
+                imgH: 1300,
+                narrow: true,
+              },
+              {
+                step: 'STEP 3',
+                title: '会社紹介が完成',
+                desc: 'A4サイズの印刷用データと画像データをダウンロードできます。',
+                img: '/lp-sample-chiba.png',
+                imgAlt: '完成した会社紹介サンプル',
+                imgW: 900,
+                imgH: 1273,
+                narrow: false,
+              },
             ].map((item) => (
-              <div key={item.step} className="bg-white rounded-xl p-7 border border-gray-100">
-                <div className="w-10 h-10 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-sm font-bold mb-4">
-                  {item.step}
+              <div key={item.step} className="bg-white rounded-xl p-6 border border-gray-100 flex flex-col">
+                <div className="inline-flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 rounded-full bg-[#1e3a5f] text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                    {item.step.replace('STEP ', '')}
+                  </div>
+                  <span className="text-xs font-bold text-[#2468a8] tracking-widest">{item.step}</span>
                 </div>
                 <h3 className="font-bold text-[#1e3a5f] text-base mb-3">{item.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+                <p className="text-gray-500 text-sm leading-relaxed mb-5 flex-1">{item.desc}</p>
+                <div className={`rounded-xl overflow-hidden border border-gray-100 ${item.narrow ? 'max-w-[130px] mx-auto' : ''}`}>
+                  <Image
+                    src={item.img}
+                    alt={item.imgAlt}
+                    width={item.imgW}
+                    height={item.imgH}
+                    className="w-full h-auto"
+                  />
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────
-          S7. 料金（白背景）
-      ──────────────────────────────────────────────── */}
+      {/* ──────────────────────────────────────────────
+          S7. 入力画面紹介
+      ─────────────────────────────────────────────── */}
+      <section className="bg-white border-t border-gray-100 py-20">
+        <div className="max-w-5xl mx-auto px-6">
+          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">パソコンが苦手でも大丈夫です</h2>
+          <p className="text-gray-400 text-sm text-center mb-12">
+            選択式中心のシンプルな入力画面。スマホでサクサク進められます。
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-8 items-center">
+
+            {/* 左の特徴 */}
+            <div className="space-y-6">
+              {[
+                { label: '選択式中心', desc: '難しい文章を書く必要はありません' },
+                { label: '自動保存', desc: '入力中も常に自動で保存されます' },
+                { label: '途中再開可能', desc: 'メールのリンクからいつでも再開できます' },
+              ].map(({ label, desc }) => (
+                <div key={label} className="flex items-start gap-3">
+                  <span className="text-[#2468a8] font-bold text-base flex-shrink-0 mt-0.5">✓</span>
+                  <div>
+                    <p className="text-sm font-bold text-[#1e3a5f]">{label}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* 中央：スマホ画面 */}
+            <div className="flex justify-center">
+              <div className="w-52 rounded-3xl overflow-hidden border-4 border-[#1e3a5f] shadow-md">
+                <Image
+                  src="/lp-phone-s7.png"
+                  alt="スマホ入力画面"
+                  width={600}
+                  height={1300}
+                  className="w-full h-auto"
+                />
+              </div>
+            </div>
+
+            {/* 右の特徴 */}
+            <div className="space-y-6">
+              {[
+                { label: 'スマホ対応', desc: 'スマホからでも快適に入力できます' },
+                { label: '写真あとから追加', desc: '写真は後から追加・変更できます' },
+                { label: 'いつでも修正', desc: '完成後も30日以内なら修正できます' },
+              ].map(({ label, desc }) => (
+                <div key={label} className="flex items-start gap-3">
+                  <span className="text-[#2468a8] font-bold text-base flex-shrink-0 mt-0.5">✓</span>
+                  <div>
+                    <p className="text-sm font-bold text-[#1e3a5f]">{label}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 下部バッジ */}
+          <div className="flex flex-wrap justify-center gap-3 mt-12">
+            {['会員登録不要', '写真なしでもOK', '途中再開可能', 'スマホ対応', 'いつでも修正'].map((label) => (
+              <span key={label} className="border border-gray-200 text-xs px-4 py-2 rounded-full text-gray-500 bg-[#f5f7fa]">
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ──────────────────────────────────────────────
+          S8. 業種紹介
+      ─────────────────────────────────────────────── */}
+      <section className="bg-[#f5f7fa] border-t border-gray-100 py-20">
+        <div className="max-w-4xl mx-auto px-6">
+          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">こんな業種におすすめです</h2>
+          <p className="text-gray-400 text-sm text-center mb-12">
+            工事会社・設備会社・地域サービス業に特化したテンプレートを用意しています。
+          </p>
+
+          <div className="mb-10">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest text-center mb-5">対応中</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {[
+                { icon: '⚡', label: '電気工事' },
+                { icon: '🔧', label: '設備工事' },
+                { icon: '🏗️', label: '防水工事' },
+                { icon: '🎨', label: '塗装工事' },
+                { icon: '🔨', label: 'リフォーム' },
+                { icon: '🚿', label: '水道・設備' },
+                { icon: '🧹', label: '清掃業' },
+                { icon: '🏘️', label: '地域サービス' },
+              ].map(({ icon, label }) => (
+                <div key={label} className="bg-white border border-gray-200 rounded-xl px-5 py-3 text-sm font-medium text-[#1e3a5f] flex items-center gap-2">
+                  <span>{icon}</span>{label}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest text-center mb-5">開発中</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {['IT・Web', '広告代理店', '士業'].map((label) => (
+                <div key={label} className="bg-gray-50 border border-dashed border-gray-200 rounded-xl px-5 py-3 text-sm text-gray-400 flex items-center gap-2">
+                  {label}
+                  <span className="text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">開発中</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ──────────────────────────────────────────────
+          S9. 料金
+      ─────────────────────────────────────────────── */}
       <section className="bg-white border-t border-gray-100 py-20">
         <div className="max-w-xl mx-auto px-6 text-center">
           <h2 className="text-2xl font-bold text-[#1e3a5f] mb-10">料金</h2>
@@ -452,9 +706,9 @@ function LandingContent() {
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────
-          S8. FAQ
-      ──────────────────────────────────────────────── */}
+      {/* ──────────────────────────────────────────────
+          S10. FAQ
+      ─────────────────────────────────────────────── */}
       <section className="bg-[#f5f7fa] border-t border-gray-100 py-20">
         <div className="max-w-2xl mx-auto px-6">
           <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-12">よくある質問</h2>
@@ -469,14 +723,16 @@ function LandingContent() {
         </div>
       </section>
 
-      {/* ─────────────────────────────────────────────
-          S9. 最終CTA
-      ──────────────────────────────────────────────── */}
+      {/* ──────────────────────────────────────────────
+          S11. 最終CTA
+      ─────────────────────────────────────────────── */}
       <section className="bg-white border-t border-gray-100 py-20">
         <div className="max-w-xl mx-auto px-6 text-center">
-          <h2 className="text-2xl font-bold text-[#1e3a5f] mb-3">まずは1枚、<br className="sm:hidden" />作ってみませんか？</h2>
+          <h2 className="text-2xl font-bold text-[#1e3a5f] mb-3">
+            まずは1枚、<br />会社紹介を整えてみませんか？
+          </h2>
           <p className="text-gray-500 text-sm leading-relaxed mb-8">
-            営業先に渡せる会社紹介が、最短5分で作成できます。<br />
+            営業先に渡せる会社紹介データが、最短5分で作成できます。<br />
             写真なし・デザインの知識がなくても大丈夫です。
           </p>
 

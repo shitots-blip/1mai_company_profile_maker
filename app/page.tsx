@@ -7,14 +7,24 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { SiteFooter } from '@/app/_components/SiteFooter'
 import { trackBeginCheckout, trackCtaClick } from '@/lib/gtag'
+import {
+  ClipboardList, Globe, FolderClock, RefreshCw, Monitor, UserCheck,
+  Handshake, BarChart3, Building2, Send, Mail, MessageCircle,
+  Zap, Wrench, Droplets, Paintbrush, Hammer, ShowerHead, Sparkles, Home,
+} from 'lucide-react'
 
 // ─── 共通パーツ ────────────────────────────────────────────────
 
-function PaymentBadges() {
+function PaymentBadges({ light = false }: { light?: boolean }) {
   return (
     <div className="flex items-center justify-center gap-2 flex-wrap mt-3">
       {['Apple Pay', 'Google Pay', 'クレジットカード'].map((label) => (
-        <span key={label} className="inline-block border border-gray-200 text-xs px-3 py-1 rounded-full bg-gray-50 text-gray-500">
+        <span
+          key={label}
+          className={`inline-block border text-xs px-3 py-1 rounded-full ${
+            light ? 'border-white/25 bg-white/10 text-white/80' : 'border-gray-200 bg-gray-50 text-gray-500'
+          }`}
+        >
           {label}
         </span>
       ))}
@@ -22,20 +32,20 @@ function PaymentBadges() {
   )
 }
 
-function SecurityNote() {
+function SecurityNote({ light = false }: { light?: boolean }) {
   return (
-    <p className="text-xs text-gray-400 text-center mt-2">
+    <p className={`text-xs text-center mt-2 ${light ? 'text-white/60' : 'text-gray-400'}`}>
       決済はStripeの安全な決済画面で行われます。カード番号は当サービスでは保存しません。
     </p>
   )
 }
 
-function TrustBadges() {
+function TrustBadges({ light = false }: { light?: boolean }) {
   return (
-    <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-gray-500">
+    <div className={`flex flex-wrap gap-x-5 gap-y-1.5 text-sm ${light ? 'text-white/85' : 'text-gray-500'}`}>
       {['会員登録不要', '写真なしでも作成できます', '完成後にデータをダウンロード'].map((t) => (
         <span key={t} className="flex items-center gap-1.5">
-          <span className="text-green-500 font-bold">✓</span>{t}
+          <span className={`font-bold ${light ? 'text-[#e8a838]' : 'text-green-500'}`}>✓</span>{t}
         </span>
       ))}
     </div>
@@ -145,7 +155,7 @@ function PrimaryButton({
     <button
       onClick={onClick}
       disabled={loading}
-      className={`bg-[#1e3a5f] text-white font-bold rounded-xl hover:bg-[#2d5080] transition disabled:opacity-50 cursor-pointer ${className}`}
+      className={`bg-[#e8a838] text-[#1e3a5f] font-bold rounded-xl hover:bg-[#f0b54a] shadow-md shadow-[#e8a838]/30 transition disabled:opacity-50 cursor-pointer ${className}`}
     >
       {loading ? '準備中...' : label}
     </button>
@@ -225,13 +235,19 @@ function LandingContent() {
   }
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white pb-[72px] md:pb-0">
 
       {/* ── ナビ ─────────────────────────────────────── */}
       <nav className="border-b border-gray-100 bg-white sticky top-0 z-10 px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <span className="text-[#1e3a5f] font-bold text-base tracking-tight">1枚会社紹介メーカー</span>
-          <PrimaryButton onClick={() => handleStart('nav')} loading={loading} label="会社紹介を作成する" className="text-sm px-5 py-2" />
+          <span className="flex items-center gap-2.5">
+            <span className="w-8 h-8 rounded-lg bg-[#1e3a5f] text-white flex flex-col items-center justify-center leading-none flex-shrink-0">
+              <span className="text-[13px] font-extrabold leading-none">1</span>
+              <span className="text-[7px] font-bold leading-none mt-px">枚</span>
+            </span>
+            <span className="text-[#1e3a5f] font-bold text-base tracking-tight">1枚会社紹介メーカー</span>
+          </span>
+          <PrimaryButton onClick={() => handleStart('nav')} loading={loading} label="会社紹介を作成する" className="hidden sm:block text-sm px-5 py-2" />
         </div>
       </nav>
 
@@ -239,53 +255,68 @@ function LandingContent() {
           S1. ファーストビュー
           左：コピー＋CTA　右：完成物写真＋スマホ入力画面
       ─────────────────────────────────────────────── */}
-      <section className="max-w-5xl mx-auto px-6 pt-16 pb-20">
-        <div className="grid md:grid-cols-5 gap-10 items-center">
+      <section className="bg-gradient-to-br from-[#f6f9fc] via-white to-[#e9f0f7]">
+        <div className="max-w-5xl mx-auto px-6 pt-16 pb-20">
+          <div className="grid md:grid-cols-5 gap-10 items-center">
 
-          {/* テキスト（2/5） */}
-          <div className="md:col-span-2">
-            <p className="text-[#2468a8] text-sm font-bold tracking-wide mb-4">
-              工事会社・設備会社・地域密着企業向け
-            </p>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#1e3a5f] leading-[1.3] mb-5">
-              A4一枚で、<br />
-              信頼が伝わる<br />
-              会社紹介をつくる
-            </h1>
-            <p className="text-gray-600 text-base leading-relaxed mb-2">
-              営業先・管理会社・お客様に渡せる<br />
-              会社紹介データをかんたん作成。
-            </p>
-            <p className="text-gray-400 text-sm leading-relaxed mb-8">
-              完成後は印刷用データと画像データをダウンロードできます。
-            </p>
+            {/* テキスト（2/5） */}
+            <div className="md:col-span-2">
+              <p className="text-[#2468a8] text-sm font-bold tracking-wide mb-4">
+                工事会社・設備会社・地域密着企業向け
+              </p>
+              <h1 className="text-3xl md:text-4xl font-bold text-[#1e3a5f] leading-[1.3] mb-5">
+                A4一枚で、<br />
+                信頼が伝わる<br />
+                会社紹介をつくる
+              </h1>
+              <p className="text-gray-600 text-base leading-relaxed mb-2">
+                営業先・管理会社・お客様に渡せる<br />
+                会社紹介データをかんたん作成。
+              </p>
+              <p className="text-gray-400 text-sm leading-relaxed md:mb-8">
+                完成後は印刷用データと画像データをダウンロードできます。
+              </p>
 
-            {checkoutError && (
-              <div className="mb-5 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-5 py-3">
-                {checkoutError}
+              {/* CTA（デスクトップのみここに表示。モバイルはサンプル画像の下） */}
+              <div className="hidden md:block">
+                {checkoutError && (
+                  <div className="mb-5 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-5 py-3">
+                    {checkoutError}
+                  </div>
+                )}
+                <PrimaryButton onClick={() => handleStart('hero')} loading={loading} className="w-full sm:w-auto text-base px-8 py-4 mb-5" />
+                <TrustBadges />
               </div>
-            )}
-
-            <PrimaryButton onClick={() => handleStart('hero')} loading={loading} className="w-full sm:w-auto text-base px-8 py-4 mb-5" />
-            <TrustBadges />
-          </div>
-
-          {/* 右：会社紹介サンプル（メイン）＋スマホ入力モック（右）（3/5） */}
-          <div className="md:col-span-3 flex items-start gap-3">
-            {/* 会社紹介サンプル */}
-            <div className="flex-1 rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-              <Image
-                src="/lp-sample-chiba.png"
-                alt="千葉中央設備株式会社の会社紹介サンプル"
-                width={900}
-                height={1273}
-                className="w-full h-auto"
-                priority
-              />
             </div>
-            {/* スマホ入力モック（右）*/}
-            <div className="hidden md:flex items-center pt-8">
-              <HeroPhoneMockup />
+
+            {/* 右：会社紹介サンプル（メイン）＋スマホ入力モック（右）（3/5） */}
+            <div className="md:col-span-3 flex items-start gap-3">
+              {/* 会社紹介サンプル */}
+              <div className="flex-1 rounded-xl overflow-hidden border border-gray-200 shadow-xl shadow-[#1e3a5f]/10">
+                <Image
+                  src="/lp-sample-chiba.png"
+                  alt="千葉中央設備株式会社の会社紹介サンプル"
+                  width={900}
+                  height={1273}
+                  className="w-full h-auto"
+                  priority
+                />
+              </div>
+              {/* スマホ入力モック（右）*/}
+              <div className="hidden md:flex items-center pt-8">
+                <HeroPhoneMockup />
+              </div>
+            </div>
+
+            {/* CTA（モバイル：サンプル画像の下） */}
+            <div className="md:hidden">
+              {checkoutError && (
+                <div className="mb-5 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-5 py-3">
+                  {checkoutError}
+                </div>
+              )}
+              <PrimaryButton onClick={() => handleStart('hero')} loading={loading} className="w-full text-base px-8 py-4 mb-5" />
+              <TrustBadges />
             </div>
           </div>
         </div>
@@ -296,7 +327,7 @@ function LandingContent() {
       ─────────────────────────────────────────────── */}
       <section className="bg-[#f5f7fa] border-t border-gray-100 py-20">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1e3a5f] text-center mb-3">
             会社紹介が整っていないと、<br />
             営業のチャンスを逃してしまいます
           </h2>
@@ -306,14 +337,17 @@ function LandingContent() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { icon: '📋', title: '営業先に渡せる資料がない', desc: '口頭説明や名刺だけでは、信頼感を十分に伝えられません。' },
-              { icon: '🌐', title: 'ホームページが長くて伝わらない', desc: '必要な情報がまとまっていないため、見てもらえないことがあります。' },
-              { icon: '📁', title: '昔の資料のまま更新できていない', desc: '情報が古いまま、かえって不安感を与えてしまいます。' },
-              { icon: '🔁', title: '毎回同じ説明をしている', desc: '営業のたびに口頭で会社説明をする手間が続いています。' },
-              { icon: '💻', title: 'デザインやPDF編集が分からない', desc: '作り方が分からず、資料作成が後回しになっています。' },
-            ].map(({ icon, title, desc }) => (
+              { Icon: ClipboardList, title: '営業先に渡せる資料がない', desc: '口頭説明や名刺だけでは、信頼感を十分に伝えられません。' },
+              { Icon: Globe, title: 'ホームページが長くて伝わらない', desc: '必要な情報がまとまっていないため、見てもらえないことがあります。' },
+              { Icon: FolderClock, title: '昔の資料のまま更新できていない', desc: '情報が古いまま、かえって不安感を与えてしまいます。' },
+              { Icon: RefreshCw, title: '毎回同じ説明をしている', desc: '営業のたびに口頭で会社説明をする手間が続いています。' },
+              { Icon: Monitor, title: 'デザインやPDF編集が分からない', desc: '作り方が分からず、資料作成が後回しになっています。' },
+              { Icon: UserCheck, title: '紹介されたとき、渡すものがない', desc: 'せっかくの紹介機会が、口頭だけで終わってしまいます。' },
+            ].map(({ Icon, title, desc }) => (
               <div key={title} className="bg-white rounded-xl border border-gray-200 p-5">
-                <div className="text-2xl mb-3">{icon}</div>
+                <div className="w-10 h-10 rounded-lg bg-[#e8f0f8] text-[#2468a8] flex items-center justify-center mb-3">
+                  <Icon size={20} strokeWidth={2} />
+                </div>
                 <p className="font-bold text-[#1e3a5f] text-sm mb-1.5">{title}</p>
                 <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
               </div>
@@ -327,7 +361,7 @@ function LandingContent() {
       ─────────────────────────────────────────────── */}
       <section className="bg-white border-t border-gray-100 py-20">
         <div className="max-w-3xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1e3a5f] text-center mb-3">
             その悩み、<br className="sm:hidden" />A4一枚の会社紹介で解決できます
           </h2>
           <p className="text-gray-400 text-sm text-center mb-12">
@@ -361,7 +395,7 @@ function LandingContent() {
       ─────────────────────────────────────────────── */}
       <section className="bg-[#f5f7fa] border-t border-gray-100 py-20">
         <div className="max-w-5xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">こんな会社紹介が作れます</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1e3a5f] text-center mb-3">こんな会社紹介が作れます</h2>
           <p className="text-gray-400 text-sm text-center mb-10">
             ダウンロードしたデータを印刷すると、このように営業資料として活用できます。
           </p>
@@ -438,7 +472,7 @@ function LandingContent() {
       ─────────────────────────────────────────────── */}
       <section className="bg-white border-t border-gray-100 py-20">
         <div className="max-w-5xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">さまざまな場面で活躍します</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1e3a5f] text-center mb-3">さまざまな場面で活躍します</h2>
           <p className="text-gray-400 text-sm text-center mb-12">
             一度作れば、繰り返し使える営業資料になります。
           </p>
@@ -456,15 +490,17 @@ function LandingContent() {
 
             <div className="grid grid-cols-2 gap-4">
               {[
-                { icon: '🤝', scene: '営業訪問', desc: '初回訪問時にそのまま手渡し' },
-                { icon: '📊', scene: '提案・見積もり時', desc: '会社の信頼感を添えて提出' },
-                { icon: '🏢', scene: '管理会社への提出', desc: '元請けへの説明資料として' },
-                { icon: '📬', scene: '見積書に同封', desc: '会社案内を一緒に送付' },
-                { icon: '📧', scene: 'メール添付', desc: '画像データとして送れます' },
-                { icon: '📱', scene: 'LINEで送付', desc: 'スマホですぐ共有できます' },
-              ].map(({ icon, scene, desc }) => (
+                { Icon: Handshake, scene: '営業訪問', desc: '初回訪問時にそのまま手渡し' },
+                { Icon: BarChart3, scene: '提案・見積もり時', desc: '会社の信頼感を添えて提出' },
+                { Icon: Building2, scene: '管理会社への提出', desc: '元請けへの説明資料として' },
+                { Icon: Send, scene: '見積書に同封', desc: '会社案内を一緒に送付' },
+                { Icon: Mail, scene: 'メール添付', desc: '画像データとして送れます' },
+                { Icon: MessageCircle, scene: 'LINEで送付', desc: 'スマホですぐ共有できます' },
+              ].map(({ Icon, scene, desc }) => (
                 <div key={scene} className="bg-[#f5f7fa] rounded-xl p-4">
-                  <div className="text-xl mb-2">{icon}</div>
+                  <div className="w-9 h-9 rounded-lg bg-white text-[#2468a8] flex items-center justify-center mb-2 border border-gray-100">
+                    <Icon size={18} strokeWidth={2} />
+                  </div>
                   <p className="font-bold text-sm text-[#1e3a5f] mb-1">{scene}</p>
                   <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
                 </div>
@@ -479,10 +515,25 @@ function LandingContent() {
       ─────────────────────────────────────────────── */}
       <section className="bg-[#f5f7fa] border-t border-gray-100 py-20">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-2">5分ほどの入力で完成します</h2>
-          <p className="text-gray-400 text-sm text-center mb-14">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1e3a5f] text-center mb-2">5分ほどの入力で完成します</h2>
+          <p className="text-gray-400 text-sm text-center mb-10">
             質問に答えるだけで、印刷用データが完成します。写真がなくても作成できます。
           </p>
+
+          {/* 実際の操作動画 */}
+          <div className="flex justify-center mb-14">
+            <div className="w-56 rounded-3xl overflow-hidden border-4 border-[#1e3a5f] shadow-lg shadow-[#1e3a5f]/15 bg-white">
+              <video
+                src="/lp-howto.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto block"
+                aria-label="実際の入力からダウンロードまでの操作動画"
+              />
+            </div>
+          </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
@@ -546,7 +597,7 @@ function LandingContent() {
       ─────────────────────────────────────────────── */}
       <section className="bg-white border-t border-gray-100 py-20">
         <div className="max-w-5xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">パソコンが苦手でも大丈夫です</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1e3a5f] text-center mb-3">パソコンが苦手でも大丈夫です</h2>
           <p className="text-gray-400 text-sm text-center mb-12">
             選択式中心のシンプルな入力画面。スマホでサクサク進められます。
           </p>
@@ -617,7 +668,7 @@ function LandingContent() {
       ─────────────────────────────────────────────── */}
       <section className="bg-[#f5f7fa] border-t border-gray-100 py-20">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-3">こんな業種におすすめです</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1e3a5f] text-center mb-3">こんな業種におすすめです</h2>
           <p className="text-gray-400 text-sm text-center mb-12">
             工事会社・設備会社・地域サービス業に特化したテンプレートを用意しています。
           </p>
@@ -626,17 +677,17 @@ function LandingContent() {
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest text-center mb-5">対応中</p>
             <div className="flex flex-wrap justify-center gap-3">
               {[
-                { icon: '⚡', label: '電気工事' },
-                { icon: '🔧', label: '設備工事' },
-                { icon: '🏗️', label: '防水工事' },
-                { icon: '🎨', label: '塗装工事' },
-                { icon: '🔨', label: 'リフォーム' },
-                { icon: '🚿', label: '水道・設備' },
-                { icon: '🧹', label: '清掃業' },
-                { icon: '🏘️', label: '地域サービス' },
-              ].map(({ icon, label }) => (
+                { Icon: Zap, label: '電気工事' },
+                { Icon: Wrench, label: '設備工事' },
+                { Icon: Droplets, label: '防水工事' },
+                { Icon: Paintbrush, label: '塗装工事' },
+                { Icon: Hammer, label: 'リフォーム' },
+                { Icon: ShowerHead, label: '水道・設備' },
+                { Icon: Sparkles, label: '清掃業' },
+                { Icon: Home, label: '地域サービス' },
+              ].map(({ Icon, label }) => (
                 <div key={label} className="bg-white border border-gray-200 rounded-xl px-5 py-3 text-sm font-medium text-[#1e3a5f] flex items-center gap-2">
-                  <span>{icon}</span>{label}
+                  <Icon size={16} strokeWidth={2} className="text-[#2468a8]" />{label}
                 </div>
               ))}
             </div>
@@ -661,10 +712,13 @@ function LandingContent() {
       ─────────────────────────────────────────────── */}
       <section className="bg-white border-t border-gray-100 py-20">
         <div className="max-w-xl mx-auto px-6 text-center">
-          <h2 className="text-2xl font-bold text-[#1e3a5f] mb-10">料金</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1e3a5f] mb-10">料金</h2>
 
           <div className="bg-[#f5f7fa] border border-gray-200 rounded-2xl p-8 mb-5 text-left">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 text-center">1枚会社紹介作成</p>
+            <p className="text-sm text-gray-400 text-center mb-2">
+              制作会社に依頼すると <span className="line-through">一般に30,000円前後〜</span>
+            </p>
             <div className="flex items-baseline justify-center gap-2 mb-7">
               <span className="text-5xl font-bold text-[#1e3a5f]">¥980</span>
               <span className="text-lg text-gray-500">（税込）</span>
@@ -711,7 +765,7 @@ function LandingContent() {
       ─────────────────────────────────────────────── */}
       <section className="bg-[#f5f7fa] border-t border-gray-100 py-20">
         <div className="max-w-2xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-[#1e3a5f] text-center mb-12">よくある質問</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1e3a5f] text-center mb-12">よくある質問</h2>
           <div className="space-y-4">
             {FAQ_ITEMS.map((item) => (
               <div key={item.q} className="bg-white rounded-xl border border-gray-100 px-6 py-5">
@@ -726,12 +780,12 @@ function LandingContent() {
       {/* ──────────────────────────────────────────────
           S11. 最終CTA
       ─────────────────────────────────────────────── */}
-      <section className="bg-white border-t border-gray-100 py-20">
+      <section className="bg-[#1e3a5f] py-20">
         <div className="max-w-xl mx-auto px-6 text-center">
-          <h2 className="text-2xl font-bold text-[#1e3a5f] mb-3">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
             まずは1枚、<br />会社紹介を整えてみませんか？
           </h2>
-          <p className="text-gray-500 text-sm leading-relaxed mb-8">
+          <p className="text-white/70 text-sm leading-relaxed mb-8">
             営業先に渡せる会社紹介データが、最短5分で作成できます。<br />
             写真なし・デザインの知識がなくても大丈夫です。
           </p>
@@ -743,13 +797,22 @@ function LandingContent() {
           )}
 
           <PrimaryButton onClick={() => handleStart('bottom')} loading={loading} className="w-full text-base px-8 py-4 mb-5" />
-          <TrustBadges />
-          <PaymentBadges />
-          <SecurityNote />
+          <div className="flex justify-center"><TrustBadges light /></div>
+          <PaymentBadges light />
+          <SecurityNote light />
         </div>
       </section>
 
       <SiteFooter />
+
+      {/* モバイル追従CTAバー */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-gray-200 px-4 py-3 flex items-center gap-3">
+        <div className="flex-shrink-0 leading-tight">
+          <p className="text-[10px] text-gray-400">買い切り・登録不要</p>
+          <p className="text-base font-bold text-[#1e3a5f]">¥980<span className="text-[10px] font-normal text-gray-400">（税込）</span></p>
+        </div>
+        <PrimaryButton onClick={() => handleStart('sticky_mobile')} loading={loading} label="会社紹介を作成する" className="flex-1 text-sm py-3" />
+      </div>
     </main>
   )
 }

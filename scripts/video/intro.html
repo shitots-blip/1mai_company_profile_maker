@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<style>
+  /* 総尺 32s。各シーンは絶対配置でフェード切替 */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1280px; height: 720px; overflow: hidden; }
+  body {
+    font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', sans-serif;
+    background: linear-gradient(150deg, #142c4a 0%, #1e3a5f 55%, #234668 100%);
+    position: relative;
+  }
+  .scene {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    opacity: 0;
+    text-align: center;
+  }
+
+  /* ---- S1: 0-4s 問いかけ ---- */
+  @keyframes s1 {
+    0%, 1.5% { opacity: 0; transform: translateY(16px); }
+    4%, 10.5% { opacity: 1; transform: translateY(0); }
+    12.5%, 100% { opacity: 0; transform: translateY(-10px); }
+  }
+  .s1 { animation: s1 32s linear forwards; }
+  .s1 h1 { color: #fff; font-size: 58px; font-weight: 800; line-height: 1.5; }
+  .s1 p { color: rgba(255,255,255,0.55); font-size: 24px; margin-top: 28px; }
+
+  /* ---- S2: 4-10s 悩みカード ---- */
+  @keyframes s2 {
+    0%, 12.5% { opacity: 0; }
+    14% { opacity: 1; }
+    29.5% { opacity: 1; }
+    31.5%, 100% { opacity: 0; }
+  }
+  .s2 { animation: s2 32s linear forwards; }
+  .s2 h2 { color: rgba(255,255,255,0.85); font-size: 34px; font-weight: 700; margin-bottom: 48px; }
+  .cards { display: flex; gap: 28px; }
+  .card {
+    width: 320px; padding: 40px 24px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    opacity: 0;
+  }
+  @keyframes cardIn {
+    0% { opacity: 0; transform: translateY(24px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .s2.go .card1 { animation: cardIn 0.6s ease-out 1.0s forwards; }
+  .s2.go .card2 { animation: cardIn 0.6s ease-out 1.7s forwards; }
+  .s2.go .card3 { animation: cardIn 0.6s ease-out 2.4s forwards; }
+  .card .emoji { font-size: 52px; margin-bottom: 20px; }
+  .card p { color: #fff; font-size: 23px; font-weight: 700; line-height: 1.6; }
+  .card span { color: rgba(255,255,255,0.5); font-size: 16px; display: block; margin-top: 10px; line-height: 1.6; }
+
+  /* ---- S3: 10-14s 質問に答えるだけ ---- */
+  @keyframes s3 {
+    0%, 31.5% { opacity: 0; transform: scale(0.96); }
+    33.5% { opacity: 1; transform: scale(1); }
+    42% { opacity: 1; }
+    44%, 100% { opacity: 0; }
+  }
+  .s3 { animation: s3 32s linear forwards; }
+  .s3 .small { color: #e8a838; font-size: 26px; font-weight: 700; letter-spacing: 4px; margin-bottom: 24px; }
+  .s3 h2 { color: #fff; font-size: 72px; font-weight: 800; line-height: 1.4; }
+  .s3 p { color: rgba(255,255,255,0.6); font-size: 26px; margin-top: 30px; }
+
+  /* ---- S4: 14-21.5s 完成イメージ ---- */
+  @keyframes s4 {
+    0%, 44% { opacity: 0; }
+    46% { opacity: 1; }
+    65% { opacity: 1; }
+    67%, 100% { opacity: 0; }
+  }
+  .s4 { animation: s4 32s linear forwards; flex-direction: row; gap: 80px; }
+  @keyframes paperUp {
+    0% { opacity: 0; transform: translateY(60px) rotate(-2deg); }
+    100% { opacity: 1; transform: translateY(0) rotate(-2deg); }
+  }
+  .s4 .paper {
+    width: 360px; border-radius: 8px; overflow: hidden;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.45);
+    opacity: 0;
+  }
+  .s4.go .paper { animation: paperUp 0.9s ease-out 0.8s forwards; }
+  .s4 .paper img { width: 100%; display: block; }
+  .s4 .points { text-align: left; }
+  .s4 .points h2 { color: #fff; font-size: 46px; font-weight: 800; margin-bottom: 44px; line-height: 1.5; }
+  .point { display: flex; align-items: center; gap: 18px; margin-bottom: 30px; opacity: 0; }
+  @keyframes pointIn {
+    0% { opacity: 0; transform: translateX(-20px); }
+    100% { opacity: 1; transform: translateX(0); }
+  }
+  .s4.go .pt1 { animation: pointIn 0.5s ease-out 1.6s forwards; }
+  .s4.go .pt2 { animation: pointIn 0.5s ease-out 2.2s forwards; }
+  .s4.go .pt3 { animation: pointIn 0.5s ease-out 2.8s forwards; }
+  .point .check {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: #e8a838; color: #1e3a5f;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 800; flex-shrink: 0;
+  }
+  .point p { color: #fff; font-size: 28px; font-weight: 700; }
+
+  /* ---- S5: 21.5-26s 価格 ---- */
+  @keyframes s5 {
+    0%, 67% { opacity: 0; transform: scale(0.97); }
+    69% { opacity: 1; transform: scale(1); }
+    79.5% { opacity: 1; }
+    81.5%, 100% { opacity: 0; }
+  }
+  .s5 { animation: s5 32s linear forwards; }
+  .s5 .label { color: rgba(255,255,255,0.6); font-size: 26px; margin-bottom: 16px; }
+  .s5 .price { color: #fff; font-size: 120px; font-weight: 800; line-height: 1.2; }
+  .s5 .price small { font-size: 44px; font-weight: 700; color: rgba(255,255,255,0.75); }
+  .s5 .note { color: #e8a838; font-size: 28px; font-weight: 700; margin-top: 20px; }
+
+  /* ---- S6: 26-32s ロゴ・CTA ---- */
+  @keyframes s6 {
+    0%, 81.5% { opacity: 0; transform: translateY(14px); }
+    84% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 1; }
+  }
+  .s6 { animation: s6 32s linear forwards; }
+  .logo {
+    width: 110px; height: 110px; border-radius: 26px;
+    background: #fff; color: #1e3a5f;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-weight: 800; margin-bottom: 36px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+  }
+  .logo .one { font-size: 52px; line-height: 1; }
+  .logo .mai { font-size: 22px; line-height: 1.2; }
+  .s6 h2 { color: #fff; font-size: 52px; font-weight: 800; margin-bottom: 18px; }
+  .s6 .url {
+    color: #1e3a5f; background: #e8a838;
+    font-size: 30px; font-weight: 800;
+    padding: 14px 46px; border-radius: 999px; margin-top: 26px;
+  }
+  .s6 p { color: rgba(255,255,255,0.6); font-size: 22px; margin-top: 22px; }
+</style>
+</head>
+<body>
+
+  <div class="scene s1">
+    <h1>その会社の魅力、<br>営業先に伝わっていますか？</h1>
+    <p>— 小さな会社の「会社紹介」の悩み —</p>
+  </div>
+
+  <div class="scene s2 go">
+    <h2>こんなことで困っていませんか</h2>
+    <div class="cards">
+      <div class="card card1">
+        <div class="emoji">💻</div>
+        <p>ホームページがない</p>
+        <span>作る時間もお金もかかる</span>
+      </div>
+      <div class="card card2">
+        <div class="emoji">📇</div>
+        <p>名刺だけでは伝わらない</p>
+        <span>何ができる会社か分からない</span>
+      </div>
+      <div class="card card3">
+        <div class="emoji">💸</div>
+        <p>パンフレットは高い</p>
+        <span>制作会社に頼むと数万円〜</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="scene s3">
+    <div class="small">1枚会社紹介メーカーなら</div>
+    <h2>質問に答えるだけ。</h2>
+    <p>スマホでポチポチ選ぶだけで、文章は自動で整います</p>
+  </div>
+
+  <div class="scene s4 go">
+    <div class="paper"><img src="http://localhost:3001/lp-sample-chiba.png" alt=""></div>
+    <div class="points">
+      <h2>営業先にそのまま渡せる<br>A4一枚が完成</h2>
+      <div class="point pt1"><div class="check">✓</div><p>約5分で完成</p></div>
+      <div class="point pt2"><div class="check">✓</div><p>スマホだけでOK</p></div>
+      <div class="point pt3"><div class="check">✓</div><p>そのまま印刷・メール添付</p></div>
+    </div>
+  </div>
+
+  <div class="scene s5">
+    <div class="label">料金は、買い切りで</div>
+    <div class="price">¥980<small>（税込）</small></div>
+    <div class="note">月額なし・追加料金なし</div>
+  </div>
+
+  <div class="scene s6">
+    <div class="logo"><span class="one">1</span><span class="mai">枚</span></div>
+    <h2>1枚会社紹介メーカー</h2>
+    <div class="url">1mai.jp で検索</div>
+    <p>30日以内なら何度でも修正・再ダウンロードできます</p>
+  </div>
+
+</body>
+</html>

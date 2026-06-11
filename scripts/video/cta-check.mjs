@@ -1,0 +1,11 @@
+import { chromium } from 'playwright'
+const browser = await chromium.launch()
+const dp = await browser.newPage({ viewport: { width: 1280, height: 900 } })
+await dp.goto('http://localhost:3001/', { waitUntil: 'networkidle' })
+await dp.waitForTimeout(1200)
+await dp.screenshot({ path: '/tmp/cta-hero.png' })
+await dp.locator('text=まずは1枚、').scrollIntoViewIfNeeded()
+await dp.waitForTimeout(800)
+await dp.screenshot({ path: '/tmp/cta-final.png' })
+await browser.close()
+console.log('ok')

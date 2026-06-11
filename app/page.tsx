@@ -45,7 +45,7 @@ function TrustBadges({ light = false }: { light?: boolean }) {
     <div className={`flex flex-wrap gap-x-5 gap-y-1.5 text-sm ${light ? 'text-white/85' : 'text-gray-500'}`}>
       {['会員登録不要', '写真なしでも作成できます', '完成後にデータをダウンロード'].map((t) => (
         <span key={t} className="flex items-center gap-1.5">
-          <span className={`font-bold ${light ? 'text-[#e8a838]' : 'text-green-500'}`}>✓</span>{t}
+          <span className={`font-bold ${light ? 'text-[#5ddb96]' : 'text-green-500'}`}>✓</span>{t}
         </span>
       ))}
     </div>
@@ -155,7 +155,7 @@ function PrimaryButton({
     <button
       onClick={onClick}
       disabled={loading}
-      className={`bg-[#e8a838] text-[#1e3a5f] font-bold rounded-xl hover:bg-[#f0b54a] shadow-md shadow-[#e8a838]/30 transition disabled:opacity-50 cursor-pointer ${className}`}
+      className={`bg-[#1a9e55] text-white font-bold rounded-xl hover:bg-[#168a4a] shadow-md shadow-[#1a9e55]/30 transition disabled:opacity-50 cursor-pointer ${className}`}
     >
       {loading ? '準備中...' : label}
     </button>

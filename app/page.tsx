@@ -241,9 +241,9 @@ function LandingContent() {
       <nav className="border-b border-gray-100 bg-white sticky top-0 z-10 px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <span className="flex items-center gap-2.5">
-            <span className="w-8 h-8 rounded-lg bg-[#1e3a5f] text-white flex flex-col items-center justify-center leading-none flex-shrink-0">
-              <span className="text-[13px] font-extrabold leading-none">1</span>
-              <span className="text-[7px] font-bold leading-none mt-px">枚</span>
+            <span className="w-9 h-9 rounded-lg bg-[#1e3a5f] text-white flex flex-col items-center justify-center leading-none flex-shrink-0">
+              <span className="text-[16px] font-extrabold leading-none">1</span>
+              <span className="text-[10px] font-bold leading-none mt-0.5">枚</span>
             </span>
             <span className="text-[#1e3a5f] font-bold text-base tracking-tight">1枚会社紹介メーカー</span>
           </span>
@@ -284,15 +284,14 @@ function LandingContent() {
                     {checkoutError}
                   </div>
                 )}
-                <PrimaryButton onClick={() => handleStart('hero')} loading={loading} className="w-full sm:w-auto text-base px-8 py-4 mb-5" />
+                <PrimaryButton onClick={() => handleStart('hero')} loading={loading} className="w-full text-base px-8 py-4 mb-4" />
                 <TrustBadges />
               </div>
             </div>
 
-            {/* 右：会社紹介サンプル（メイン）＋スマホ入力モック（右）（3/5） */}
-            <div className="md:col-span-3 flex items-start gap-3">
-              {/* 会社紹介サンプル */}
-              <div className="flex-1 rounded-xl overflow-hidden border border-gray-200 shadow-xl shadow-[#1e3a5f]/10">
+            {/* 右：会社紹介サンプル（3/5） */}
+            <div className="md:col-span-3">
+              <div className="rounded-xl overflow-hidden border border-gray-200 shadow-xl shadow-[#1e3a5f]/10">
                 <Image
                   src="/lp-sample-chiba.png"
                   alt="千葉中央設備株式会社の会社紹介サンプル"
@@ -301,10 +300,6 @@ function LandingContent() {
                   className="w-full h-auto"
                   priority
                 />
-              </div>
-              {/* スマホ入力モック（右）*/}
-              <div className="hidden md:flex items-center pt-8">
-                <HeroPhoneMockup />
               </div>
             </div>
 
@@ -785,9 +780,8 @@ function LandingContent() {
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
             まずは1枚、<br />会社紹介を整えてみませんか？
           </h2>
-          <p className="text-white/70 text-sm leading-relaxed mb-8">
-            営業先に渡せる会社紹介データが、最短5分で作成できます。<br />
-            写真なし・デザインの知識がなくても大丈夫です。
+          <p className="text-white/70 text-sm mb-8">
+            写真なし・登録なし。スマホで最短5分、今日中に完成します。
           </p>
 
           {checkoutError && (

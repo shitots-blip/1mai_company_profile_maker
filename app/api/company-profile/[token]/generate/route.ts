@@ -185,7 +185,17 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
       console.log('[generate] OpenAI success', { catchcopy: ai.catchcopy?.slice(0, 20) })
     } catch (aiErr) {
       console.error('[generate] OpenAI failed:', aiErr instanceof Error ? aiErr.message : aiErr)
-      throw Object.assign(aiErr as Error, { errorCode: 'AI_GENERATION_FAILED' })
+      // フォールバック: AI失敗時でもPDFを生成できる最低限の内容
+      const services = (profile.service_categories ?? []).join('・') || 'サービス'
+      const area = profile.service_area ?? '各地域'
+      ai = {
+        catchcopy: `${profile.company_name ?? ''}の確かな技術`,
+        intro: `${profile.company_name ?? ''}は、${area}で${services}に対応しています。丁寧な対応とわかりやすい説明を心がけ、お客様の課題解決に取り組んでいます。`,
+        strengths: ['丁寧な対応', 'わかりやすい説明', '安心して相談できる体制'],
+        areaText: `${area}を中心に対応しています。まずはお気軽にご相談ください。`,
+        greeting: `${profile.company_name ?? ''}をご利用いただきありがとうございます。お客様のご要望に誠実にお応えし、安心してご依頼いただける体制を整えています。`,
+      }
+      console.log('[generate] using fallback AI content')
     }
 
     await supabaseAdmin
@@ -218,6 +228,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
     console.log('[generate] building HTML...')
     const html = await buildCompanyHtml({ profile: { ...profile, ...ai }, fileUrls, ai })
     console.log('[generate] HTML built, length:', html.length)
+
+    // ── PDF前バリデーション（要件7） ─────────────────────────────
+    const validationErrors: string[] = []
+    if (!profile.company_name) validationErrors.push('会社名なし')
+    if ((ai.intro ?? '').length < 20) validationErrors.push(`会社紹介文が短すぎる(${ai.intro?.length ?? 0}文字)`)
+    if ((ai.strengths ?? []).length < 3) validationErrors.push(`強みが${ai.strengths?.length ?? 0}件`)
+    if (!ai.greeting) validationErrors.push('ごあいさつなし')
+    if (!profile.phone && !profile.email) validationErrors.push('連絡先なし')
+    if (validationErrors.length > 0) {
+      console.warn('[generate] validation warnings:', validationErrors)
+    }
+    console.log('[generate] content validation:', validationErrors.length === 0 ? 'ok' : validationErrors.join(', '))
 
     // ── PDF/PNG 生成 ─────────────────────────────────────────────
     console.log('[generate] generating PDF/PNG...')

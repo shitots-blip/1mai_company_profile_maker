@@ -33,6 +33,8 @@ export async function generatePdfAndPng(html: string): Promise<{
     if (isServerless) {
       // puppeteer-core API
       await page.setContent(html, { waitUntil: 'networkidle0' })
+      // Google Fonts（日本語フォント）の読み込み完了を待つ
+      await page.evaluate(() => document.fonts.ready)
       const pdfBuffer = Buffer.from(
         await page.pdf({
           format: 'A4',

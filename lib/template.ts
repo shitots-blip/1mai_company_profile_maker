@@ -23,7 +23,6 @@ async function buildQrDataUrl(url: string | null | undefined): Promise<string> {
 
 // ── 共通CSS ──────────────────────────────────────────────────────────────
 const BASE_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=block');
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     width: 210mm;
@@ -1155,7 +1154,15 @@ export async function buildCompanyHtml(opts: TemplateOptions): Promise<string> {
 
   const sharedOpts = { profile, ai, fileUrls, qrDataUrl, logoHtml }
 
-  return hasPhoto
+  const html = hasPhoto
     ? buildPhotoLayout(sharedOpts)
     : buildNoPhotoLayoutV2(sharedOpts)
+
+  // <base href> により /fonts/* が https://www.1mai.jp/fonts/* に解決される。
+  // CSS @import ではなく <link> を使うことで Puppeteer が確実にフォントを読み込む。
+  const fontHead = [
+    '<base href="https://www.1mai.jp/">',
+    '<link rel="stylesheet" href="/fonts/noto-sans-jp.css">',
+  ].join('\n')
+  return html.replace('<meta charset="UTF-8">', `<meta charset="UTF-8">\n${fontHead}`)
 }

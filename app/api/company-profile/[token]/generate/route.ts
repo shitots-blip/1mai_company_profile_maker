@@ -5,8 +5,8 @@ import { CompanyProfile, AIGeneratedContent } from '@/lib/types'
 import { buildCompanyHtml } from '@/lib/template'
 import { generatePdfAndPng } from '@/lib/pdf'
 
-// Vercel Pro で最大 60 秒まで許可
-export const maxDuration = 60
+// Vercel Pro で最大 300 秒まで許可（Puppeteer + 大きな画像読み込みに余裕を持たせる）
+export const maxDuration = 300
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -51,9 +51,9 @@ async function generateWithOpenAI(profile: CompanyProfile): Promise<AIGeneratedC
   "catchcopy": "キャッチコピー（20〜30文字）",
   "intro": "会社紹介文（100〜150文字、句点で2文に分けること）",
   "strengths": [
-    "見出し（10〜16文字、体言止め可）\n説明文（45〜70文字、具体的に。句点で2〜3文）",
-    "見出し（10〜16文字、体言止め可）\n説明文（45〜70文字、具体的に。句点で2〜3文）",
-    "見出し（10〜16文字、体言止め可）\n説明文（45〜70文字、具体的に。句点で2〜3文）"
+    "見出し（10〜16文字、体言止め可）\\n説明文（45〜70文字、具体的に。句点で2〜3文）",
+    "見出し（10〜16文字、体言止め可）\\n説明文（45〜70文字、具体的に。句点で2〜3文）",
+    "見出し（10〜16文字、体言止め可）\\n説明文（45〜70文字、具体的に。句点で2〜3文）"
   ],
   "areaText": "対応エリアの説明（40〜80文字。1文目は全体方針、2文目は具体的な市区町村名を含める）",
   "greeting": "ごあいさつ文（100〜140文字、句点で2〜3文に分けること）"

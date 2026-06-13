@@ -32,9 +32,24 @@ export async function generatePdfAndPng(html: string): Promise<{
 
     if (isServerless) {
       // puppeteer-core API
-      await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 })
-      // フォント読み込み完了を待つ（self-hosted fonts via /fonts/noto-sans-jp.css）
+      // domcontentloaded: CSS/フォント読み込み開始を待つが画像ロード完了は待たない。
+      // networkidle0 は大きな画像ファイルでタイムアウトするため使用しない。
+      await page.setContent(html, { waitUntil: 'domcontentloaded', timeout: 20000 })
+      // フォント読み込み完了を明示的に待つ（self-hosted Noto Sans JP）
       await page.evaluate(() => document.fonts.ready)
+      // 画像読み込みを最大 10 秒待つ（タイムアウトしてもPDF生成は続行）
+      await page.evaluate(() => new Promise<void>((resolve) => {
+        const imgs = Array.from(document.images) as HTMLImageElement[]
+        const pending = imgs.filter(img => !img.complete)
+        if (pending.length === 0) { resolve(); return }
+        const timer = setTimeout(resolve, 10000)
+        let done = 0
+        pending.forEach(img => {
+          const finish = () => { if (++done >= pending.length) { clearTimeout(timer); resolve() } }
+          img.addEventListener('load', finish, { once: true })
+          img.addEventListener('error', finish, { once: true })
+        })
+      }))
       // フォントが実際にロードされたか確認
       const fontLoaded = await page.evaluate(() =>
         document.fonts.check('400 12px "Noto Sans JP"')

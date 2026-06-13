@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
     '/api/company-profile/[token]/generate': [
       './node_modules/@sparticuz/chromium/**/*',
     ],
+    '/api/debug-chromium': [
+      './node_modules/@sparticuz/chromium/**/*',
+    ],
   },
   async headers() {
     return [

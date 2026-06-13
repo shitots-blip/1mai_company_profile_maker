@@ -1,16 +1,18 @@
-import { chromium as playwrightCore } from 'playwright-core'
-
 export async function generatePdfAndPng(html: string): Promise<{
   pdfBuffer: Buffer
   pngBuffer: Buffer
 }> {
-  // Vercel/Lambda では @sparticuz/chromium を使用、ローカルでは通常の playwright を使用
   const isServerless = process.env.VERCEL === '1' || !!process.env.AWS_LAMBDA_FUNCTION_NAME
 
-  let browser: Awaited<ReturnType<typeof playwrightCore.launch>>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let browser: any
 
   if (isServerless) {
-    const chromium = (await import('@sparticuz/chromium')).default
+    const [{ chromium: playwrightCore }, chromiumMod] = await Promise.all([
+      import('playwright-core'),
+      import('@sparticuz/chromium'),
+    ])
+    const chromium = chromiumMod.default
     const executablePath = await chromium.executablePath()
     console.log('[pdf] serverless mode, chromium at:', executablePath)
     browser = await playwrightCore.launch({

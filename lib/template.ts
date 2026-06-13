@@ -35,7 +35,7 @@ const BASE_CSS = `
 `
 
 // ════════════════════════════════════════════════════════════════════
-// 写真ありレイアウト（千葉中央設備デザイン準拠 v2）
+// 写真ありレイアウト（千葉中央設備デザイン準拠 v3）
 // ════════════════════════════════════════════════════════════════════
 function buildPhotoLayout(opts: {
   profile: CompanyProfile & Partial<AIGeneratedContent>
@@ -46,44 +46,52 @@ function buildPhotoLayout(opts: {
 }): string {
   const { profile, ai, fileUrls, qrDataUrl } = opts
 
-  // ── ヒーロー写真（作業写真 > 代表写真 の優先順）
+  // ── ヒーロー写真（作業写真 > 代表写真）
   const heroSrc = fileUrls.work_photo || fileUrls.representative_photo || ''
-  // 代表写真は作業写真と両方あるときのみ挨拶欄に表示
   const greetingPhotoSrc = (fileUrls.work_photo && fileUrls.representative_photo)
-    ? fileUrls.representative_photo
-    : ''
+    ? fileUrls.representative_photo : ''
 
-  // ── ヘッダー左（ロゴ + 会社名）
+  // ── ヘッダー左
   const headerLeft = fileUrls.logo
-    ? `<div class="hd-left">
-         <img src="${fileUrls.logo}" class="hd-logo" alt="ロゴ">
-         <div class="hd-coname">${profile.company_name ?? ''}</div>
-       </div>`
-    : `<div class="hd-left">
-         <div class="hd-coname hd-coname-only">${profile.company_name ?? ''}</div>
-       </div>`
+    ? `<div class="hd-left"><img src="${fileUrls.logo}" class="hd-logo" alt="ロゴ"><div class="hd-coname">${profile.company_name ?? ''}</div></div>`
+    : `<div class="hd-left"><div class="hd-coname hd-coname-only">${profile.company_name ?? ''}</div></div>`
 
-  // ── ヘッダー右（サービス 2行）
+  // ── ヘッダー右（最大5件 / 2行）
   const svcs = profile.service_categories ?? []
   const hdLine1 = svcs.slice(0, 2).join('・')
   const hdLine2 = svcs.slice(2, 5).join('・')
   const headerRight = [hdLine1, hdLine2].filter(Boolean).join('<br>')
 
-  // ── 強みカード本文: praised_points → values の順にフォールバック
+  // ── 強みカードアイコン（inline SVG × 3種）
+  const CARD_ICONS = [
+    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3a5f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3a5f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3a5f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  ]
+
+  // ── 強みカード: \n区切り（新形式）→ 文末区切り → praised_points/values
   const bodyPool = [...(profile.praised_points ?? []), ...(profile.values ?? [])]
 
   const strengthCards = (ai.strengths ?? []).slice(0, 3).map((s, i) => {
     const num = String(i + 1).padStart(2, '0')
-    // タイトルと本文を分割（句読点・スペース区切り）
-    const titleMatch = s.match(/^(.{4,20}?)[。、\s　]/)
-    const title = titleMatch ? titleMatch[1] : s
-    const splitBody = titleMatch ? s.slice(titleMatch[0].length) : ''
-    // 本文: 分割できた部分 > praised_points > values の順
-    const rawBody = splitBody || bodyPool[i] || ''
-    const body = rawBody.length > 68 ? rawBody.slice(0, 66) + '…' : rawBody
+    let title: string, body: string
+    const nlIdx = s.indexOf('\n')
+    if (nlIdx > 0) {
+      title = s.slice(0, nlIdx).trim()
+      body  = s.slice(nlIdx + 1).trim()
+    } else {
+      const m = s.match(/^(.{4,20}?)[。、\s　]/)
+      title = m ? m[1] : s
+      body  = m ? s.slice(m[0].length) : ''
+    }
+    if (!body) body = bodyPool[i] ?? ''
+
     return `
     <div class="sc-card">
-      <div class="sc-num">${num}</div>
+      <div class="sc-head">
+        <span class="sc-num">${num}</span>
+        <span class="sc-icon">${CARD_ICONS[i]}</span>
+      </div>
       <div class="sc-title">${title}</div>
       ${body ? `<div class="sc-body">${body}</div>` : ''}
     </div>`
@@ -93,24 +101,32 @@ function buildPhotoLayout(opts: {
   const serviceChips = (profile.service_categories ?? []).slice(0, 9)
     .map(s => `<span class="chip">${s}</span>`).join('')
 
-  // ── 主な対応先リスト
+  // ── 主な対応先リスト（小丸付き）
   const targetItems = (profile.target_customers ?? []).slice(0, 6)
-    .map(t => `<div class="tgt-item">▸ ${t}</div>`).join('')
+    .map(t => `<div class="tgt-item"><span class="tgt-dot"></span>${t}</div>`).join('')
 
-  // ── 会社概要テーブル行
+  // ── 会社概要テーブル
   const ovRows: string[] = []
   if (profile.company_name)
     ovRows.push(`<tr><td class="ov-k">社　名</td><td>${profile.company_name}</td></tr>`)
   if (profile.postal_code || profile.address)
     ovRows.push(`<tr><td class="ov-k">所在地</td><td>${profile.postal_code ? `〒${profile.postal_code} ` : ''}${profile.address ?? ''}</td></tr>`)
   if (profile.established_year)
-    ovRows.push(`<tr><td class="ov-k">創　業</td><td>${profile.established_year}</td></tr>`)
+    ovRows.push(`<tr><td class="ov-k">創　業</td><td>${profile.established_year} 年</td></tr>`)
   if (profile.representative_title || profile.representative_name)
     ovRows.push(`<tr><td class="ov-k">代　表</td><td>${profile.representative_title ?? ''}　${profile.representative_name ?? ''}</td></tr>`)
 
+  // ── エリアテキスト（\n → <br>）
+  const areaHtml = (ai.areaText ?? '').replace(/\n/g, '<br>')
+
   const footerSvcs = (profile.service_categories ?? []).slice(0, 5).join('・')
 
-  // 高さ設計: 14+65+36+57+41+76+8 = 297mm
+  // ── 連絡先アイコン（白抜き inline SVG）
+  const ICON_PHONE = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.6 1.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.93a16 16 0 0 0 6.06 6.06l.92-1.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.8 15.3z"/></svg>`
+  const ICON_MAIL  = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`
+  const ICON_WEB   = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`
+
+  // 高さ設計: 14+63+40+66+46+60+8 = 297mm
   const css = `
     ${BASE_CSS}
 
@@ -133,34 +149,34 @@ function buildPhotoLayout(opts: {
     .hd-coname-only { font-size: 22px; }
     .hd-right { text-align: right; font-size: 9px; color: #555; line-height: 1.9; }
 
-    /* ── ヒーロー写真 65mm ─────────────────────── */
-    .hero { height: 65mm; overflow: hidden; flex-shrink: 0; }
+    /* ── ヒーロー写真 63mm ─────────────────────── */
+    .hero { height: 63mm; overflow: hidden; flex-shrink: 0; }
     .hero-img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
 
-    /* ── キャッチコピー＋紹介文 36mm ────────────── */
+    /* ── キャッチコピー＋紹介文 40mm ────────────── */
     .catch-sect {
-      height: 36mm; flex-shrink: 0; overflow: hidden;
-      padding: 4mm 6mm 3.5mm;
+      height: 40mm; flex-shrink: 0; overflow: hidden;
+      padding: 4.5mm 6mm 4mm;
       display: flex; flex-direction: column; justify-content: center;
       border-bottom: 1px solid #e8edf4;
     }
     .catchcopy {
-      font-size: 21px; font-weight: 700; color: #1e3a5f; line-height: 1.45;
-      border-left: 4px solid #1e3a5f; padding-left: 4mm;
-      margin-bottom: 2.5mm;
+      font-size: 26px; font-weight: 700; color: #1e3a5f; line-height: 1.4;
+      border-left: 5px solid #1e3a5f; padding-left: 4mm;
+      margin-bottom: 3mm;
       display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
       overflow: hidden;
     }
     .intro-text {
-      font-size: 10px; color: #333; line-height: 1.75; padding-left: 1mm;
-      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+      font-size: 10.5px; color: #333; line-height: 1.8; padding-left: 1mm;
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
       overflow: hidden;
     }
 
-    /* ── 強み3点 57mm ───────────────────────────── */
+    /* ── 強み3点 66mm ───────────────────────────── */
     .str-sect {
-      height: 57mm; flex-shrink: 0;
-      background: #f3f5f8; padding: 4mm 5.5mm 4mm;
+      height: 66mm; flex-shrink: 0;
+      background: #f3f5f8; padding: 4mm 5.5mm;
     }
     .sc-cards { display: flex; gap: 3mm; height: 100%; }
     .sc-card {
@@ -169,61 +185,66 @@ function buildPhotoLayout(opts: {
       padding: 3.5mm 3.5mm; overflow: hidden;
       display: flex; flex-direction: column;
     }
-    .sc-num {
-      font-size: 22px; font-weight: 700; color: #1e3a5f; opacity: 0.22;
-      line-height: 1; margin-bottom: 1.5mm; flex-shrink: 0;
+    .sc-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 2mm; flex-shrink: 0;
     }
+    .sc-num {
+      font-size: 24px; font-weight: 700; color: #1e3a5f; opacity: 0.18;
+      line-height: 1;
+    }
+    .sc-icon { opacity: 0.75; line-height: 0; }
     .sc-title {
-      font-size: 10.5px; font-weight: 700; color: #1e3a5f;
-      line-height: 1.4; margin-bottom: 2mm; flex-shrink: 0;
+      font-size: 13px; font-weight: 700; color: #1e3a5f;
+      line-height: 1.45; margin-bottom: 2mm; flex-shrink: 0;
     }
     .sc-body {
-      font-size: 9px; color: #4a5568; line-height: 1.6;
-      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+      font-size: 9.5px; color: #4a5568; line-height: 1.65;
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4;
       overflow: hidden;
     }
 
-    /* ── 代表ごあいさつ 41mm ────────────────────── */
+    /* ── 代表ごあいさつ 46mm ────────────────────── */
     .greet-sect {
-      height: 41mm; flex-shrink: 0; overflow: hidden;
+      height: 46mm; flex-shrink: 0; overflow: hidden;
       border-top: 1px solid #e4e8ef;
-      padding: 3.5mm 6mm;
-      display: flex; align-items: flex-start; gap: 4mm;
+      padding: 4mm 6mm;
+      display: flex; align-items: flex-start; gap: 5mm;
     }
     .rep-photo {
-      width: 26mm; height: 26mm; flex-shrink: 0;
+      width: 30mm; height: 30mm; flex-shrink: 0;
       border-radius: 2mm; object-fit: cover; object-position: top;
     }
     .greet-body { flex: 1; overflow: hidden; }
     .greet-label {
-      font-size: 8.5px; font-weight: 700; color: #1e3a5f;
-      border-left: 2.5px solid #1e3a5f; padding-left: 2.5mm;
-      margin-bottom: 2mm; letter-spacing: 0.04em;
+      font-size: 9px; font-weight: 700; color: #1e3a5f;
+      border-left: 3px solid #1e3a5f; padding-left: 3mm;
+      margin-bottom: 2.5mm; letter-spacing: 0.04em;
     }
     .greet-text {
-      font-size: 9px; color: #444; line-height: 1.7; margin-bottom: 2.5mm;
-      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5;
+      font-size: 10px; color: #444; line-height: 1.75; margin-bottom: 3mm;
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4;
       overflow: hidden;
     }
     .rep-name-row { text-align: right; }
-    .rep-ttl  { font-size: 8px; color: #888; margin-right: 1.5mm; }
-    .rep-name { font-size: 14px; font-weight: 700; color: #1e3a5f; }
+    .rep-ttl  { font-size: 8.5px; color: #888; margin-right: 2mm; }
+    .rep-name { font-size: 16px; font-weight: 700; color: #1e3a5f; }
 
-    /* ── 下部情報 76mm（固定 → 余白ゼロ） ──────── */
+    /* ── 下部情報 60mm（固定） ──────────────────── */
     .info-sect {
-      height: 76mm; flex-shrink: 0;
+      height: 60mm; flex-shrink: 0;
       display: flex;
       border-top: 1px solid #e4e8ef;
       overflow: hidden;
     }
-    .ic { padding: 3mm 4mm; overflow: hidden; }
+    .ic { padding: 3.5mm 4mm; overflow: hidden; }
     .ic-left   { width: 36%; border-right: 1px solid #e4e8ef; }
     .ic-center { width: 36%; border-right: 1px solid #e4e8ef; }
     .ic-right  { flex: 1; }
 
     .ih {
-      font-size: 8px; font-weight: 700; color: #1e3a5f;
-      border-left: 2.5px solid #1e3a5f; padding-left: 2mm;
+      font-size: 8.5px; font-weight: 700; color: #1e3a5f;
+      border-left: 3px solid #1e3a5f; padding-left: 2.5mm;
       margin-bottom: 2.5mm; letter-spacing: 0.04em;
     }
     .i-sub { margin-top: 3.5mm; }
@@ -232,28 +253,47 @@ function buildPhotoLayout(opts: {
     .chip-grp { display: flex; flex-wrap: wrap; gap: 1.5mm; }
     .chip {
       background: #e8edf5; color: #1e3a5f;
-      font-size: 8px; padding: 1mm 2.5mm; border-radius: 1mm;
+      font-size: 8.5px; padding: 1mm 2.5mm; border-radius: 1mm;
       white-space: nowrap;
     }
 
     /* 対応先リスト */
-    .tgt-item { font-size: 8.5px; color: #444; padding: 0.8mm 0; line-height: 1.3; }
+    .tgt-item {
+      display: flex; align-items: center; gap: 1.5mm;
+      font-size: 9px; color: #444; padding: 0.9mm 0; line-height: 1.3;
+    }
+    .tgt-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #1e3a5f; flex-shrink: 0; opacity: 0.5;
+    }
 
     /* 会社概要 */
     .ov-table { width: 100%; border-collapse: collapse; }
-    .ov-table td { font-size: 8px; color: #333; padding: 1mm 0; vertical-align: top; line-height: 1.45; }
-    .ov-k { color: #888; font-size: 7.5px; width: 13mm; white-space: nowrap; }
+    .ov-table td { font-size: 8.5px; color: #333; padding: 0.9mm 0; vertical-align: top; line-height: 1.45; }
+    .ov-k { color: #888; font-size: 8px; width: 13mm; white-space: nowrap; }
 
     /* エリアテキスト */
-    .area-text { font-size: 9px; color: #333; line-height: 1.65; }
+    .area-text { font-size: 9.5px; color: #333; line-height: 1.7; }
 
     /* 右カラム: QR + 連絡先 */
     .qr-blk { text-align: center; margin-bottom: 3mm; }
-    .qr-img { width: 20mm; height: 20mm; }
-    .qr-cap { font-size: 6.5px; color: #999; margin-top: 1mm; }
-    .ct-line { font-size: 8px; color: #333; margin-bottom: 2.5mm; line-height: 1.3; }
-    .ct-key  { font-size: 7px; font-weight: 700; color: #1e3a5f; margin-right: 1.5mm; letter-spacing: 0.04em; }
-    .tel-big { font-size: 15px; font-weight: 700; color: #1e3a5f; display: block; margin-top: 0.5mm; }
+    .qr-img { width: 22mm; height: 22mm; }
+    .qr-cap { font-size: 7px; color: #999; margin-top: 1mm; }
+
+    .ct-row {
+      display: flex; align-items: flex-start; gap: 2mm;
+      margin-bottom: 2.5mm;
+    }
+    .ct-circle {
+      width: 17px; height: 17px; border-radius: 50%;
+      background: #1e3a5f;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .ct-content { flex: 1; }
+    .ct-key  { font-size: 7px; font-weight: 700; color: #1e3a5f; letter-spacing: 0.06em; display: block; }
+    .ct-val  { font-size: 8px; color: #333; display: block; line-height: 1.4; }
+    .tel-big { font-size: 16px; font-weight: 700; color: #1e3a5f; display: block; }
 
     /* ── フッター 8mm ───────────────────────────── */
     .pg-footer {
@@ -305,7 +345,7 @@ function buildPhotoLayout(opts: {
       <p class="greet-text">${ai.greeting ?? ''}</p>
       <div class="rep-name-row">
         ${profile.representative_title ? `<span class="rep-ttl">${profile.representative_title}</span>` : ''}
-        ${profile.representative_name  ? `<span class="rep-name">${profile.representative_name}</span>`  : ''}
+        ${profile.representative_name  ? `<span class="rep-name">${profile.representative_name}</span>` : ''}
       </div>
     </div>
   </section>
@@ -323,7 +363,7 @@ function buildPhotoLayout(opts: {
     <!-- 中: エリア + 会社概要 -->
     <div class="ic ic-center">
       <div class="ih">対応エリア</div>
-      <p class="area-text">${ai.areaText ?? ''}</p>
+      <p class="area-text">${areaHtml}</p>
       <div class="i-sub">
         <div class="ih">会社概要</div>
         <table class="ov-table"><tbody>${ovRows.join('')}</tbody></table>
@@ -336,9 +376,27 @@ function buildPhotoLayout(opts: {
         <img src="${qrDataUrl}" class="qr-img" alt="QR">
         <div class="qr-cap">詳しい対応内容・施工事例はこちら</div>
       </div>` : ''}
-      ${profile.phone ? `<div class="ct-line"><span class="ct-key">TEL</span><span class="tel-big">${profile.phone}</span></div>` : ''}
-      ${profile.email ? `<div class="ct-line"><span class="ct-key">MAIL</span>${profile.email}</div>` : ''}
-      ${profile.company_homepage_address ? `<div class="ct-line"><span class="ct-key">WEB</span>${profile.company_homepage_address.replace(/^https?:\/\//, '')}</div>` : ''}
+      ${profile.phone ? `<div class="ct-row">
+        <span class="ct-circle">${ICON_PHONE}</span>
+        <div class="ct-content">
+          <span class="ct-key">TEL</span>
+          <span class="tel-big">${profile.phone}</span>
+        </div>
+      </div>` : ''}
+      ${profile.email ? `<div class="ct-row">
+        <span class="ct-circle">${ICON_MAIL}</span>
+        <div class="ct-content">
+          <span class="ct-key">MAIL</span>
+          <span class="ct-val">${profile.email}</span>
+        </div>
+      </div>` : ''}
+      ${profile.company_homepage_address ? `<div class="ct-row">
+        <span class="ct-circle">${ICON_WEB}</span>
+        <div class="ct-content">
+          <span class="ct-key">WEB</span>
+          <span class="ct-val">${profile.company_homepage_address.replace(/^https?:\/\//, '')}</span>
+        </div>
+      </div>` : ''}
     </div>
 
   </section>

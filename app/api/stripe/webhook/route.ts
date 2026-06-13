@@ -58,11 +58,24 @@ export async function POST(req: NextRequest) {
 
   try {
     // ── 冪等処理: 既存 order チェック ─────────────────────────────
-    const { data: existingOrder } = await supabaseAdmin
+    const { data: existingOrder, error: selectError } = await supabaseAdmin
       .from('orders')
       .select('id')
       .eq('stripe_session_id', session.id)
       .single()
+
+    // PGRST116 = "no rows returned" は正常。それ以外はログ出力
+    if (selectError && selectError.code !== 'PGRST116') {
+      const isUnreachable = selectError.message?.includes('fetch failed') || selectError.message?.includes('ENOTFOUND')
+      if (isUnreachable) {
+        console.error('[webhook] SUPABASE UNREACHABLE — check NEXT_PUBLIC_SUPABASE_URL and project status at https://supabase.com/dashboard', {
+          message: selectError.message,
+          code: selectError.code,
+        })
+      } else {
+        console.error('[webhook] existing order select error:', { message: selectError.message, code: selectError.code })
+      }
+    }
 
     let orderId: string
 
@@ -77,13 +90,20 @@ export async function POST(req: NextRequest) {
         .single()
 
       if (orderError || !order) {
-        console.error('[webhook] orders insert error:', {
-          message: orderError?.message,
-          details: orderError?.details,
-          hint: orderError?.hint,
-          code: orderError?.code,
-          insertPayload,
-        })
+        const isUnreachable = orderError?.message?.includes('fetch failed') || orderError?.message?.includes('ENOTFOUND')
+        if (isUnreachable) {
+          console.error('[webhook] SUPABASE UNREACHABLE — check NEXT_PUBLIC_SUPABASE_URL and project status at https://supabase.com/dashboard', {
+            message: orderError?.message,
+          })
+        } else {
+          console.error('[webhook] orders insert error:', {
+            message: orderError?.message,
+            details: orderError?.details,
+            hint: orderError?.hint,
+            code: orderError?.code,
+            insertPayload,
+          })
+        }
         return NextResponse.json({ error: 'orders insert failed', detail: orderError?.message }, { status: 500 })
       }
 

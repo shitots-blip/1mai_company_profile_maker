@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 
+// ── 作成開始ボタン ─────────────────────────────────────────────
 function StartButton({ sessionId }: { sessionId: string | null }) {
   const router = useRouter()
   const [token, setToken] = useState<string | null>(null)
@@ -42,6 +43,72 @@ function StartButton({ sessionId }: { sessionId: string | null }) {
   )
 }
 
+// ── メール再送フォーム ─────────────────────────────────────────
+function ResendForm({ sessionId }: { sessionId: string | null }) {
+  const [open, setOpen] = useState(false)
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle')
+
+  async function handleResend() {
+    if (!email.trim()) return
+    setStatus('sending')
+    try {
+      const res = await fetch('/api/checkout/resend-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), sessionId }),
+      })
+      setStatus(res.ok ? 'ok' : 'error')
+    } catch {
+      setStatus('error')
+    }
+  }
+
+  return (
+    <div className="mt-6 border-t border-gray-100 pt-6">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="text-sm text-gray-400 underline underline-offset-2 hover:text-gray-600 transition"
+      >
+        メールが届かない場合
+      </button>
+
+      {open && (
+        <div className="mt-4">
+          {status === 'ok' ? (
+            <p className="text-green-600 text-sm font-medium">
+              作成リンクを再送しました。メールをご確認ください。
+            </p>
+          ) : (
+            <>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="購入時のメールアドレス"
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm mb-3 outline-none focus:border-[#1e3a5f] transition"
+              />
+              <button
+                onClick={handleResend}
+                disabled={status === 'sending' || !email.trim()}
+                className="w-full py-3 bg-gray-800 text-white text-sm font-bold rounded-xl hover:bg-gray-700 transition disabled:opacity-50 cursor-pointer"
+              >
+                {status === 'sending' ? '送信中...' : '作成リンクを再送する'}
+              </button>
+              {status === 'error' && (
+                <p className="text-red-500 text-xs mt-2">
+                  作成リンクを確認できませんでした。時間をおいて再度お試しください。
+                </p>
+              )}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── メインコンテンツ ───────────────────────────────────────────
 function SuccessContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
@@ -52,7 +119,6 @@ function SuccessContent() {
       setStatus('error')
       return
     }
-    // Webhookが処理するまで少し待ってからステータス確認
     const timer = setTimeout(() => setStatus('ok'), 2000)
     return () => clearTimeout(timer)
   }, [sessionId])
@@ -83,15 +149,20 @@ function SuccessContent() {
       </div>
       <h1 className="text-2xl font-bold text-[#1e3a5f] mb-4">お支払いが完了しました</h1>
       <p className="text-gray-600 mb-2 leading-relaxed">
-        会社紹介の作成リンクをメールでお送りしました。この画面からも、すぐに作成を始められます。
+        会社紹介の作成リンクをメールでお送りしました。<br />
+        この画面からも、すぐに作成を始められます。
       </p>
       <p className="text-gray-400 text-xs mb-8">
         途中で画面を閉じても、メールのリンクから再開できます。
       </p>
+
       <StartButton sessionId={sessionId} />
-      <p className="text-gray-400 text-xs mt-6">
+
+      <p className="text-gray-400 text-xs mt-4">
         メールが届かない場合は、迷惑メールフォルダをご確認ください。
       </p>
+
+      <ResendForm sessionId={sessionId} />
     </div>
   )
 }

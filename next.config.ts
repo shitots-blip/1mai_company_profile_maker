@@ -1,7 +1,12 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ['@sparticuz/chromium', 'playwright-core', 'playwright'],
+  serverExternalPackages: ['@sparticuz/chromium', 'puppeteer-core', 'playwright-core', 'playwright'],
+  outputFileTracingIncludes: {
+    '/api/company-profile/[token]/generate': [
+      './node_modules/@sparticuz/chromium/**/*',
+    ],
+  },
   async headers() {
     return [
       {

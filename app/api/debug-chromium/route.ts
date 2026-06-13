@@ -5,7 +5,7 @@ export const maxDuration = 60
 
 export async function GET(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get('s')
-  if (secret !== process.env.ADMIN_SECRET) {
+  if (secret !== (process.env.ADMIN_SECRET ?? '').trim()) {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 })
   }
 

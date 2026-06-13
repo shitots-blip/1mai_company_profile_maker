@@ -1,0 +1,14 @@
+{
+  "functions": {
+    "api/company-profile/[token]/generate": {
+      "memory": 3009,
+      "maxDuration": 300,
+      "includeFiles": "node_modules/@sparticuz/chromium/**"
+    },
+    "api/debug-chromium": {
+      "memory": 3009,
+      "maxDuration": 60,
+      "includeFiles": "node_modules/@sparticuz/chromium/**"
+    }
+  }
+}
